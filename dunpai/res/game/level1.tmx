@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="20" tilewidth="20" tileheight="20" nextobjectid="12">
+ <tileset firstgid="1" name="f_tilethru-sheet0" tilewidth="20" tileheight="20" spacing="2" margin="1">
+  <image source="../game/f_tilethru-sheet0.png" width="256" height="256"/>
+ </tileset>
+ <tileset firstgid="122" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
+  <image source="../../../game/tiledmap.png" width="256" height="512"/>
+ </tileset>
+ <layer name="bg" width="45" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztlM0KwjAMx/Msft2q1+ndt/DkZepTi3rwpK9gBitkIUlThiuFBX4sNG32b5oWAODUU5PNmqexWjWfS4vItE5vbXXurEbNs/3XWuSSmHNFbhNo8doCWZLvClkjG2XsWEbmwLbIDgmCHxgxXlr3HjkgjeA3DKo71p7rvyMfwlf57wN5Ii8lTvPEHO/+K9VX8+m+aNzTXzyWWmPFNR3Uj3MCDM+AruP9o/UaHbNIrc2ps7RH3j8B9F6jYxY8j5TPU2drDp9v6fDUWlqfo8HST2utvTfSmXtqrd1/K69nL543ciy8n60zkGor9WTqjRyDdD9+/VJWPg==
+  </data>
+ </layer>
+ <objectgroup name="body" opacity="0.9">
+  <object id="3" name="hero" x="49.3333" y="189.333"/>
+  <object id="8" name="next" x="869.333" y="249.333"/>
+  <object id="11" name="box" x="789.333" y="250.667"/>
+ </objectgroup>
+</map>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="20" tilewidth="20" tileheight="20" nextobjectid="41">
+ <tileset firstgid="1" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
+  <image source="../../../game/tiledmap.png" width="256" height="512"/>
+ </tileset>
+ <layer name="bg" width="45" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztkjkOAjEMRXMWti5AORNqbkFFw1ZQwflxJCx9LHsckJgo0lj6yubYL45DCOHwVks2MY9jrTIfa0N8aZm3tTpna5F5sv/aiXR2fC6k6wgspTYjzUkL0pK0gj3tbF8H88MiaU3aFM63oT63xxmNff4DyZ977QF6Gnm5327GOcbhGPcC5qxO8GO9JT/3kNZn8myoJy0fHi3mDqQxe+/Ad1s9pq1L96yYmbf/gdn6o6isMR7WSIvhMbN/CbOVG/Npa+tfJTfyDjHzXY9Z5sa3JlGvPuj1iyJfUthL6ixzWMzYt1puuafVslPuob/Vs2ngDs4tXyl55t3z4vN8R3oBF6NPSQ==
+  </data>
+ </layer>
+ <objectgroup name="hero" opacity="0.9">
+  <object id="39" x="44.6667" y="180.667" width="20.6667" height="21.3333"/>
+ </objectgroup>
+ <objectgroup name="box">
+  <object id="26" name="box" x="871.333" y="250"/>
+ </objectgroup>
+ <objectgroup name="next">
+  <object id="27" name="next" x="792" y="250.667"/>
+ </objectgroup>
+ <objectgroup name="wall">
+  <object id="38" x="2" y="203.333">
+   <polyline points="0,0 239.333,-0.666667 279.333,38 319.333,38 338,58 898.667,59.3333"/>
+  </object>
+ </objectgroup>
+</map>
