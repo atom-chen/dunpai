@@ -6,12 +6,14 @@ end)
  display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
  display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
 
+ local PlayScene = import("app.scenes.PlayScene")
+
 function LevelScene:ctor()
-	-- self.levelNumber = {{x = 390,y = 140,medal = 1},{x = 240,y = 140,medal = 2},
-	-- 	{x = 140,y = 220,medal = 1},{x = 240,y = 300,medal = 3},{x = 340,y = 360,medal = 1},
+	-- self.levelNumber = {{x = 390,y = 140,medal = 0},{x = 240,y = 140,medal = 0},
+	-- 	{x = 140,y = 220,medal = 0},{x = 240,y = 300,medal = 0},{x = 340,y = 360,medal = 0},
 	-- 	{x = 310,y = 445,medal = 0},{x = 440,y = 450,medal = 0},{x = 590,y = 420,medal = 0},
 	-- 	{x = 480,y = 350,medal = 0},{x = 530,y = 230,medal = 0},{x = 630,y = 140,medal = 0},
-	-- 	{x = 715,y = 190,medal = 0},levelCrossNum = 5,maxlevelNum = 12}
+	-- 	{x = 715,y = 190,medal = 0},levelCrossNum = 0,maxlevelNum = 12}
 	-- GameState.save(self.levelNumber)
 	 --dump(GameData)
 	self.levelinfo = {}
@@ -49,7 +51,8 @@ function LevelScene:addLevelBG()
 				:setPosition(cc.p(levelinformation.PosX,levelinformation.PosY))
 				:addTo(levelbgsprite)
 				:onButtonClicked(function (event)
-					print(i)
+					local scene = PlayScene.new(i+1)
+					display.replaceScene(scene,"fade",0.2)
 				end)
 			 local sprite1 = display.newSprite("game/stagebutton-sheet0_01.png")
 			 	:setPosition(cc.p(self.levelinfo[tostring(levelCrossNum+2)].x,self.levelinfo[tostring(levelCrossNum+2)].y))
@@ -63,7 +66,8 @@ function LevelScene:addLevelBG()
 				:setPosition(cc.p(levelinformation.PosX,levelinformation.PosY))
 				:addTo(levelbgsprite)
 				:onButtonClicked(function (event)
-					print(i)
+					local scene = PlayScene.new(i+1)
+					display.replaceScene(scene,"fade",0.2)
 				end)
 		end
 	else
@@ -74,7 +78,8 @@ function LevelScene:addLevelBG()
 				:setPosition(cc.p(levelinformation.PosX,levelinformation.PosY))
 				:addTo(levelbgsprite)
 				:onButtonClicked(function (event)
-					print(i)
+					local scene = PlayScene.new(i+1)
+					display.replaceScene(scene,"fade",0.2)
 				end)
 		end
 

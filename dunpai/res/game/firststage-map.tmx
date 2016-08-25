@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="38" height="25" tilewidth="20" tileheight="20">
+ <tileset firstgid="1" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
+  <image source="tiledmap.png" width="256" height="512"/>
+ </tileset>
+ <layer name="块层 1" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztkr0OwjAMhP0q5acLFDJCdp6lgg5MVH18riKWrsaRmMrikz61PefnklokFAqFQqFQKBQSeYER3MFE/lS8ATz+kKsBG7AFO7AHbcW/rZjrAq6gAydwBon8TH5eMdsBHJ0smb45++w3Bc7Yy6cnlJFqcz/MvTA4+/dmzrP4fBeaUZ82Z6KaZvy1B1qq1cbye0f7a0Z92vvif5rKXM3p9YDtjeR4vDafOcnyn3XyfU88h2vJOQOP9XrD8+zZ7Hp2Xq33vTr7Xtba2Nrab0AiLlc=
+  </data>
+ </layer>
+ <objectgroup name="Objects" width="0" height="0">
+  <object name="HeroSpawnPoint" x="47" y="350"/>
+  <object name="PassStagePoint" x="672" y="408"/>
+  <object name="Barrier" x="720" y="400" width="20" height="20"/>
+ </objectgroup>
+</map>

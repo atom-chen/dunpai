@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="38" height="25" tilewidth="20" tileheight="20">
+ <tileset firstgid="1" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
+  <image source="tiledmap.png" width="256" height="512"/>
+ </tileset>
+ <layer name="块层 1" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztkMkKwkAQROO+m4viklxcD64BUTTiH+j//45P6IZBEpmL6KELHhlqOtWVBIHJZDKZTCaTyfTfasAEpjCDOSxgCc0f7rtDClthB3tIoPeFXq99a9h47LuKn8jsGS7w+EKvGxzhJPtSZ18qM3UoQRkqzrMKtYx79Yse+wvy7ntWlqf5eh7BGCLoQBdCGMDw7T52/LZHr5bkuVlxhufma4fIY9adV3/l0aufk/UpXzvovX6LO69n9/+FcufT65CTFwf5+eo/AfhTESE=
+  </data>
+ </layer>
+ <layer name="块层 2" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt0TEOABAUA1C35QKcHxPjFwnLe0m3Dk2aEgAALHmkbml/53Bo/lcCnVf/RvbArQ7Z5QWi
+  </data>
+ </layer>
+ <layer name="块层 3" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt0rsNACAIRVHWxdDrAu4ttPjptPGehArjSwARAAAAYK17qVe5mBH/t5RhF/N+FPPdzVQPvaymt/kuTOZdAi8MEZ8HZA==
+  </data>
+ </layer>
+ <objectgroup name="Objects" width="38" height="25">
+  <object name="HeroSpawnPoint" x="80" y="350"/>
+  <object name="PassStagePoint" x="680" y="350"/>
+  <object name="Coin" x="260" y="270">
+   <ellipse/>
+  </object>
+  <object name="Coin" x="320" y="310">
+   <ellipse/>
+  </object>
+ </objectgroup>
+</map>
