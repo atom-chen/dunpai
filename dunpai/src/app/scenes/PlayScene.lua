@@ -1,7 +1,7 @@
 
-Hero = import("app.scenes.Hero").new()
--- display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
--- display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
+Hero = import("app.scenes.Hero")
+display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
+display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
 local PlayScene = class("PlayScene", function()
     return display.newPhysicsScene("PlayScene")
 end)
@@ -35,89 +35,6 @@ function PlayScene:initUI()
 	self.map = cc.TMXTiledMap:create("level/level1.tmx")
 	self.map:setScale(1.6)
 	self:addChild(self.map)
-	-- dump(self.map)
-	-- --Music UI
-	-- local musicImage = {
-	-- 	on = "#bmusic-sheet003.png",
-	-- 	off = "#bmusic-sheet001.png"
-	-- }
-
-	-- local musicCheckButton = cc.ui.UICheckBoxButton.new(musicImage)
-	-- musicCheckButton:setPosition(cc.p(display.right-110,display.top-25))
-	-- musicCheckButton:addTo(self,2)
-	-- musicCheckButton:onButtonClicked(function ()
-	-- 	--print(musicCheckButton:isButtonSelected())
-	-- end)
-
-	-- --Sound UI
-	-- local SoundImage = {
-	-- 	on = "#bsfx-sheet004.png",
-	-- 	off = "#bsfx-sheet001.png"
-	-- }
-
-	-- local SoundCheckButton = cc.ui.UICheckBoxButton.new(SoundImage)
-	-- SoundCheckButton:setPosition(cc.p(display.right-70,display.top-25))
-	-- SoundCheckButton:addTo(self,2)
-	-- SoundCheckButton:onButtonClicked(function ()
-	-- 	--print(SoundCheckButton:isButtonSelected())
-	-- end)
-	-- --Pause Button
-	-- local PauseImage = {
-	-- 	normal = "gameause-sheet0.png",
-	-- 	pressed = "gameause-sheet1.png",
-	-- 	disabled = "gameause-sheet2.png"
-	-- }
-	-- local PauseButton = cc.ui.UIPushButton.new(PauseImage)
-	-- 	:setPosition(cc.p(display.right-30,display.top-25))
-	-- 	:addTo(self,2)
-	-- 	:onButtonClicked(function ()
-	-- 		--pause game
-	-- 		cc.Director:getInstance():pause()
-	-- 		--Pause Layer
-	-- 		local pauseLayer = display.newColorLayer(cc.c4b(0,0,0,220))
-	-- 		self:addChild(pauseLayer,3)
-	-- 		--BGButton
-	-- 		local boardPause = display.newSprite("game/boardpause-sheet0.png")
-	-- 			:setPosition(cc.p(display.cx,display.cy))
-	-- 			:addTo(pauseLayer)
-	-- 		--Map Button
-	-- 		local MapImage = {
-	-- 			normal = "gamettonmap.png",
-	-- 		}
-	-- 		local MapButton = cc.ui.UIPushButton.new(MapImage)
-	-- 			:setPosition(cc.p(80,80))
-	-- 			:addTo(boardPause) 
-	-- 			:onButtonClicked(function ()
-	-- 				cc.Director:getInstance():resume()
-	-- 				local scene = import("app.scenes.LevelScene").new()
-	-- 				display.replaceScene(scene,"fade",0.5)
-	-- 			end)
-	-- 		--replay Button
-	-- 		local ReplayImage = {
-	-- 			normal = "gamettonredo.png"
-	-- 		}
-	-- 		local ReplayButton = cc.ui.UIPushButton.new(ReplayImage)
-	-- 			:setPosition(cc.p(180,80))
-	-- 			:addTo(boardPause) 
-	-- 			:onButtonClicked(function ()
-	-- 				cc.Director:getInstance():resume()
-	-- 				local scene = import("app.scenes.PlayScene").new()
-	-- 				display.replaceScene(scene,"fade",0.5)
-	-- 			end)
-
-	-- 			--continue Button
-	-- 		local ContinueImage = {
-	-- 			normal = "gamettonunpause.png"
-	-- 		}
-	-- 		local ContinueButton = cc.ui.UIPushButton.new(ContinueImage)
-	-- 			:setPosition(cc.p(280,80))
-	-- 			:addTo(boardPause) 
-	-- 			:onButtonClicked(function ()
-	-- 				pauseLayer:removeFromParent()
-	-- 				cc.Director:getInstance():resume()
-	-- 			end)		
-	-- 	end)
-
 
 	local sizeX = self.map:getContentSize().width*1.6
 	local sizeY = self.map:getContentSize().height*1.5
@@ -128,10 +45,12 @@ function PlayScene:initUI()
 	edgeNode:setPosition(size.width / 2, size.height / 2)
 	edgeNode:setPhysicsBody(body)
 	self:addChild(edgeNode)
+
 	self.hero = Hero.new()
 	self.hero:setTag(1)
 	self:addChild(self.hero)
 	self.pos1 = cc.p(self.hero:getPosition())
+
 
 	local wallArray = self.map:getObjectGroup("wall"):getObjects()
 	-- dump(wallArray[1].polylinePoints)
@@ -155,6 +74,87 @@ function PlayScene:initUI()
 	self:addChild(self.camera)
 
 	self:setCameraMask(cc.CameraFlag.USER2)
+
+	local musicImage = {
+		off = "#bmusic-sheet003.png",
+		on = "#bmusic-sheet001.png"
+	}
+
+	local musicCheckButton = cc.ui.UICheckBoxButton.new(musicImage)
+	musicCheckButton:setPosition(cc.p(display.right-110,display.top-25))
+	musicCheckButton:addTo(self)
+	musicCheckButton:onButtonClicked(function ()
+		--print(musicCheckButton:isButtonSelected())
+	end)
+
+	--Sound UI
+	local SoundImage = {
+		on = "#bsfx-sheet004.png",
+		off = "#bsfx-sheet002.png"
+	}
+
+	local SoundCheckButton = cc.ui.UICheckBoxButton.new(SoundImage)
+	SoundCheckButton:setPosition(cc.p(display.right-70,display.top-25))
+	SoundCheckButton:addTo(self)
+	SoundCheckButton:onButtonClicked(function ()
+		--print(SoundCheckButton:isButtonSelected())
+	end)
+	--Pause Button
+	local PauseImage = {
+		normal = "game/bpause-sheet0.png",
+		pressed = "game/bpause-sheet1.png",
+		disabled = "game/bpause-sheet2.png"
+	}
+	local PauseButton = cc.ui.UIPushButton.new(PauseImage)
+		:setPosition(cc.p(display.right-30,display.top-25))
+		:addTo(self)
+		:onButtonClicked(function ()
+			--pause game
+			cc.Director:getInstance():pause()
+			--Pause Layer
+			local pauseLayer = display.newColorLayer(cc.c4b(0,0,0,220))
+			self:addChild(pauseLayer,3)
+			--BGButton
+			local boardPause = display.newSprite("game/boardpause-sheet0.png")
+				:setPosition(cc.p(display.cx,display.cy))
+				:addTo(pauseLayer)
+			--Map Button
+			local MapImage = {
+				normal = "game/buttonmap.png",
+			}
+			local MapButton = cc.ui.UIPushButton.new(MapImage)
+				:setPosition(cc.p(80,80))
+				:addTo(boardPause) 
+				:onButtonClicked(function ()
+					cc.Director:getInstance():resume()
+					local scene = import("app.scenes.LevelScene").new()
+					display.replaceScene(scene,"fade",0.5)
+				end)
+			--replay Button
+			local ReplayImage = {
+				normal = "game/buttonredo.png"
+			}
+			local ReplayButton = cc.ui.UIPushButton.new(ReplayImage)
+				:setPosition(cc.p(180,80))
+				:addTo(boardPause) 
+				:onButtonClicked(function ()
+					cc.Director:getInstance():resume()
+					local scene = import("app.scenes.PlayScene").new()
+					display.replaceScene(scene,"fade",0.5)
+				end)
+
+				--continue Button
+			local ContinueImage = {
+				normal = "game/buttonunpause.png"
+			}
+			local ContinueButton = cc.ui.UIPushButton.new(ContinueImage)
+				:setPosition(cc.p(280,80))
+				:addTo(boardPause) 
+				:onButtonClicked(function ()
+					pauseLayer:removeFromParent()
+					cc.Director:getInstance():resume()
+				end)		
+		end)
 end
 
 function PlayScene:Schedule()

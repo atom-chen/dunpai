@@ -1,5 +1,5 @@
 
-display.addSpriteFrames("game1/player-sheet.plist","game1/player-sheet.pvr.ccz")
+display.addSpriteFrames("game/player-sheet.plist","game/player-sheet.pvr.ccz")
 local Hero = class("PlayScene", function()
 	hero = display.newSprite("#player-sheet0_1.png")
     return hero
