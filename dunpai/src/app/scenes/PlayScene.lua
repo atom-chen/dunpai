@@ -1,10 +1,14 @@
 
 Hero = import("app.scenes.Hero")
+local Monsters = import("app.scenes.Monsters")
 display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
 display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
+
 local PlayScene = class("PlayScene", function()
     return display.newPhysicsScene("PlayScene")
 end)
+
+ 
 
 function PlayScene:ctor()
 	self.hero = nil
@@ -13,25 +17,28 @@ function PlayScene:ctor()
 	self.cameramove = false
 	self.moveleft = false
 	self.moveright = false
-	self.jump = false
 	self.hero = nil
+	self.MonsterTable = {}
 
 	
-	self:getPhysicsWorld():setGravity(cc.p(0,0))
 	self:getPhysicsWorld():setDebugDrawMask(cc.PhysicsWorld.DEBUGDRAW_ALL)
 	self:initUI()
 	self:Schedule()
 	self:scheduleUpdate()
 	self:Touch()
-	self:Contact()
 end
 
 function PlayScene:initUI()
+
+
+
+	--banfground pictrue
 	local bg = display.newSprite("game/backgroundforest-sheet0.png")
 		:align(display.CENTER, display.cx, display.cy)
 		:addTo(self)
 	bg:setScaleY(1.5)
 	bg:setScaleX(2.6)
+	--
 	self.map = cc.TMXTiledMap:create("level/level1.tmx")
 	self.map:setScale(1.6)
 	self:addChild(self.map)
@@ -45,28 +52,49 @@ function PlayScene:initUI()
 	edgeNode:setPosition(size.width / 2, size.height / 2)
 	edgeNode:setPhysicsBody(body)
 	self:addChild(edgeNode)
-
+	-- dump(self.map)
+	--
 	self.hero = Hero.new()
-	self.hero:setTag(1)
 	self:addChild(self.hero)
 	self.pos1 = cc.p(self.hero:getPosition())
 
 
 	local wallArray = self.map:getObjectGroup("wall"):getObjects()
-	-- dump(wallArray[1].polylinePoints)
-	for i=1,(#wallArray[1].polylinePoints -1) do
-		local point1 = cc.p(wallArray[1].polylinePoints[i].x*1.6,(wallArray[1].y - wallArray[1].polylinePoints[i].y)*1.6)
-		local point2 = cc.p(wallArray[1].polylinePoints[i+1].x * 1.6,(wallArray[1].y - wallArray[1].polylinePoints[i+1].y)*1.6)
-		local wallbody = cc.PhysicsBody:createEdgeSegment(point1,point2,cc.PHYSICSBODY_MATERIAL_DEFAULT)
-		-- wallbody:setCategoryBitmask(0xFFFFFFFF)
-		wallbody:setContactTestBitmask(0xFFFFFFFF)
-		-- wallbody:setCollisionBitmask(0xFFFFFFFF)
-		local node = display.newNode()
+
+	for i = 1,#wallArray do
+		for j = 1,#wallArray[i].polylinePoints-1 do
+			local point1 = cc.p((wallArray[i].x+wallArray[i].polylinePoints[j].x)*1.6,(wallArray[i].y - wallArray[i].polylinePoints[j].y)*1.6)
+			local point2 = cc.p((wallArray[i].x+wallArray[i].polylinePoints[j+1].x) * 1.6,(wallArray[i].y - wallArray[i].polylinePoints[j+1].y)*1.6)
+			local wallbody = cc.PhysicsBody:createEdgeSegment(point1,point2,cc.PhysicsMaterial(1.5,0,10))
+ 			local node = display.newNode()
 			:setCameraMask(cc.CameraFlag.USER2)
-			:setPhysicsBody(wallbody)
-			:setTag(2)
-			:addTo(self)
+	 		:setPhysicsBody(wallbody)
+	 		:addTo(self)
+		end
 	end
+
+
+	
+
+
+	--Monster
+	if self.map:getObjectGroup("Monster") ~= nil then
+		self.MonsterP = self.map:getObjectGroup("Monster"):getObjects()
+		--dump(MonsterP)
+		for i=1,#self.MonsterP do
+			local Monster = Monsters.new(tonumber(self.MonsterP[i].Type))
+			--dump(Monster)
+			local MonsterBody = cc.PhysicsBody:createBox(Monster.monsterSprite:getContentSize(),cc.PhysicsMaterial(1.5,0,10))
+			Monster.monsterSprite:setPhysicsBody(MonsterBody)
+			Monster.monsterSprite:setPosition(cc.p(Monster.monsterSprite:getContentSize().width/2+self.MonsterP[i].x*1.6,Monster.monsterSprite:getContentSize().height/2+self.MonsterP[i].y*1.6))
+		 	Monster.monsterSprite:addTo(self,2)
+		 	table.insert(self.MonsterTable,Monster)
+
+		end
+	end
+
+
+
 
 
 	self.camera = cc.Camera:createOrthographic(display.width, display.height, 0, 1)
@@ -75,27 +103,32 @@ function PlayScene:initUI()
 
 	self:setCameraMask(cc.CameraFlag.USER2)
 
+	self:setCameraMask(cc.CameraFlag.USER2, true)
+	
+
+	--Music UI
 	local musicImage = {
-		off = "#bmusic-sheet003.png",
-		on = "#bmusic-sheet001.png"
+		on = "#bmusic-sheet003.png",
+		off = "#bmusic-sheet001.png"
 	}
 
 	local musicCheckButton = cc.ui.UICheckBoxButton.new(musicImage)
 	musicCheckButton:setPosition(cc.p(display.right-110,display.top-25))
-	musicCheckButton:addTo(self)
+	musicCheckButton:addTo(self,2)
 	musicCheckButton:onButtonClicked(function ()
 		--print(musicCheckButton:isButtonSelected())
+		-- musicCheckButton:setCameraMask(cc.CameraFlag.USER2)
 	end)
-
+	self.musicCheckButton = musicCheckButton
 	--Sound UI
 	local SoundImage = {
 		on = "#bsfx-sheet004.png",
-		off = "#bsfx-sheet002.png"
+		off = "#bsfx-sheet001.png"
 	}
 
 	local SoundCheckButton = cc.ui.UICheckBoxButton.new(SoundImage)
 	SoundCheckButton:setPosition(cc.p(display.right-70,display.top-25))
-	SoundCheckButton:addTo(self)
+	SoundCheckButton:addTo(self,2)
 	SoundCheckButton:onButtonClicked(function ()
 		--print(SoundCheckButton:isButtonSelected())
 	end)
@@ -107,7 +140,7 @@ function PlayScene:initUI()
 	}
 	local PauseButton = cc.ui.UIPushButton.new(PauseImage)
 		:setPosition(cc.p(display.right-30,display.top-25))
-		:addTo(self)
+		:addTo(self,2)
 		:onButtonClicked(function ()
 			--pause game
 			cc.Director:getInstance():pause()
@@ -153,8 +186,9 @@ function PlayScene:initUI()
 				:onButtonClicked(function ()
 					pauseLayer:removeFromParent()
 					cc.Director:getInstance():resume()
-				end)		
-		end)
+			end)		
+	end)
+
 end
 
 function PlayScene:Schedule()
@@ -176,12 +210,25 @@ function PlayScene:Schedule()
 			self.hero:Moveright()
 		end
 
-		if self.jump then
-			-- if self.hero.action ~= "jump_up" and self.hero.action ~= "jump_down" then
-				self.hero:Jump()
-			-- end
+		--MonsterMove
+		for i = 1,#self.MonsterTable do
+			local MSprite = self.MonsterTable[i].monsterSprite
+			local x1 = self.MonsterP[i].x1*1.6
+			local x2 = self.MonsterP[i].x2*1.6
+			if self.MonsterTable[i].face == "right" then				
+			 	if MSprite:getPositionX()-MSprite:getContentSize().width/2 <= tonumber(x2) then 
+					MSprite:setPosition(cc.p(MSprite:getPositionX()+1,MSprite:getPositionY()))
+				else
+					self.MonsterTable[i].face = "left"
+				end
+			else
+				if MSprite:getPositionX()-MSprite:getContentSize().width/2 >= tonumber(x1) then
+					MSprite:setPosition(cc.p(MSprite:getPositionX()-1,MSprite:getPositionY()))
+				else
+					self.MonsterTable[i].face = "right"
+				end
+			end
 		end
-
 	end)
 end
 
@@ -202,51 +249,32 @@ function PlayScene:Touch()
 			end
 
 			if event.x>display.width*3/4 and event.x<display.width  and event.y>0 and event.y<display.height/3 then
-				self.jump = true
+				self.hero:Jump()
 			end
 			return true
 		end
 
 		if event.name == "ended" then
 			if event.x>0 and event.x<display.width/4 and event.y>0 and event.y<display.height/3 then
-				if self.hero.action == "run" then
-					self.hero:runaction("stand")
+				if self.hero.state == "stay_left" then
+					self.hero:runaction("stay")
+				elseif self.hero.state == "protect_left" then
+					self.hero:runaction("protect")
 				end
-				self.moveright = false
 				self.moveleft = false
 			end
 
 			if event.x>display.width/4 and event.x<display.width/2  and event.y>0 and event.y<display.height/3 then
-				if self.hero.action == "run" then
-					self.hero:runaction("stand")
+				if self.hero.state == "stay_right" then
+					-- print("1")
+					self.hero:runaction("stay")
+				elseif self.hero.state == "protect_right" then
+					self.hero:runaction("protect")
 				end
 				self.moveright = false
-				self.moveleft = false
 			end
-
 		end
 	end)
-end
-
-function PlayScene:Contact()
-	local function onContactBegin(contact)
-		local tag1 = contact:getShapeA():getBody():getNode():getTag()
-		local tag2 = contact:getShapeB():getBody():getNode():getTag()
-		if self.hero.action == "jump_down" then
-			if (tag1 == 2 and tag2 == 1) or (tag1 == 1 and tag2 == 2) then
-				self.hero.speedY = 15
-				self.jump = false
-				self.hero:runaction("stand")
-			end
-		end
-		return true
-	end
-
-	local contactListener = cc.EventListenerPhysicsContact:create()
-	contactListener:registerScriptHandler(onContactBegin,cc.Handler.EVENT_PHYSICS_CONTACT_BEGIN)
-
-	local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
-	eventDispatcher:addEventListenerWithFixedPriority(contactListener, 1)
 end
 
 return PlayScene
