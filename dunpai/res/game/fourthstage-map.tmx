@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="38" height="25" tilewidth="20" tileheight="20" nextobjectid="18">
+ <tileset firstgid="1" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
+  <image source="tiledmap.png" width="256" height="512"/>
+ </tileset>
+ <layer name="块层 1" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztlj1LA0EQhs/vD4hBIpjTKKgggh8hNtGkVdMo2qiNadRGGxXs9F9Y2gvaqViqf813cSaOw+7K4nlnkYGH3ZvZnXvYHGGj6P/EQdYCjmh7hUXbKyyS9OoA3aAHdBH9RGeGXhOgBPI0GmJiJEOvDeHSULmGa1MKXknGT1434DYNERU+rztwTzyko9MKn9cjeALP4CUdnVb4vF7BG3gHl5Q7Aad/LRW5vQbAFJgGM2I0ucEMvepgAayAVZrP0zip1p6DC3CWoNehI78JqsLLzJdA2eJ1Ba7Ja9vBTqCX7/uqRN/PqUbzZbXO/OZzYBfsWdinNbNgPdBPxxp5yHOq0VyfV0XkmqrWFGuqlr2hYb6vxejrd5RntqXWFsT7jlSNn+uOvaFhXMrCy/VtmZDndaxq/FygXiHB/0fmPmLuJnxX4bEX9Fnqv8lzzbVWzotgDIyDHBiKPu8so1SLRb2k8nmxh/OyX17liyo3rHpzr5znnTIv98h8LPbY+tv6+Hrb3s+jfDevl3tsde7PeZury0Wen1z3AdiaNG4=
+  </data>
+ </layer>
+ <layer name="块层 2" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUkAPSgThjoB0xCkbBKBjxoBSIywbaEaNgFIxQUDjQDsABahgg7RRs5UM+Dj2ktGtwmT0KRsFAAgCupwaK
+  </data>
+ </layer>
+ <layer name="块层 3" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUkAsygTgbiV8+UA4ZBaNgFIxIkM8wWu6MglEwCrCDLAZIO4USgE9/Nh65UTAKBgIAAPpbA9k=
+  </data>
+ </layer>
+ <objectgroup name="Objects">
+  <object id="1" name="ScorePoint" x="710" y="335" width="19" height="18"/>
+  <object id="2" name="HeroSpawnPoint" x="647" y="390" width="21" height="19"/>
+  <object id="3" name="Barrier" x="281" y="302" width="57" height="37"/>
+  <object id="4" name="Barrier" x="61" y="262" width="16" height="16"/>
+  <object id="5" name="Barrier" x="-1" y="381" width="20" height="38"/>
+  <object id="6" name="Barrier" x="142" y="401" width="18" height="19"/>
+  <object id="7" name="PassStagePoint" x="407" y="85" width="25" height="23"/>
+  <object id="8" name="Coin" x="142" y="313" width="17" height="17">
+   <ellipse/>
+  </object>
+  <object id="11" x="128" y="357" width="5">
+   <ellipse/>
+  </object>
+  <object id="13" name="Coin" x="123.5" y="331.5" width="17" height="17">
+   <ellipse/>
+  </object>
+  <object id="14" name="Coin" x="160.5" y="331.5" width="17" height="17">
+   <ellipse/>
+  </object>
+  <object id="15" name="Coin" x="360.5" y="241.5" width="17" height="17">
+   <ellipse/>
+  </object>
+  <object id="16" name="Coin" x="402.5" y="242.5" width="17" height="17">
+   <ellipse/>
+  </object>
+  <object id="17" name="Coin" x="381.5" y="216.5" width="17" height="17">
+   <ellipse/>
+  </object>
+ </objectgroup>
+</map>

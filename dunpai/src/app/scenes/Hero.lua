@@ -1,7 +1,8 @@
 
 display.addSpriteFrames("game/player-sheet.plist","game/player-sheet.pvr.ccz")
-local Hero = class("PlayScene", function()
+local Hero = class("PlayScene", function(nowNum)
 	hero = display.newSprite("#player-sheet0_1.png")
+	hero.nowNum = nowNum
     return hero
 end)
 
@@ -19,7 +20,7 @@ function Hero:ctor()
 end
 
 function Hero:initself()
-	local map = cc.TMXTiledMap:create("level/level1.tmx")
+	local map = cc.TMXTiledMap:create("level/level"..self.nowNum..".tmx")
 	self.wallArray = map:getObjectGroup("wall"):getObjects()
 
 	local heroArray = map:getObjectGroup("hero"):getObjects()

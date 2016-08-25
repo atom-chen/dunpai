@@ -4,8 +4,10 @@ local Monsters = import("app.scenes.Monsters")
 display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
 display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
 
-local PlayScene = class("PlayScene", function()
-    return display.newPhysicsScene("PlayScene")
+local PlayScene = class("PlayScene", function(nowNum)
+	local playscene = display.newPhysicsScene("PlayScene")
+	playscene.nowNum = nowNum
+    return playscene
 end)
 
  
@@ -18,14 +20,18 @@ function PlayScene:ctor()
 	self.moveleft = false
 	self.moveright = false
 	self.hero = nil
+	self.nowMedal = 1 --当前关卡所得金牌数
+	self.isGold = false   --当前关卡金币是否全部得到
+	self.isHelp = false   --当前关卡的小动物是否救完
 	self.MonsterTable = {}
 
-	
+	self:getPhysicsWorld():setGravity(cc.p(0,0))
 	self:getPhysicsWorld():setDebugDrawMask(cc.PhysicsWorld.DEBUGDRAW_ALL)
 	self:initUI()
 	self:Schedule()
 	self:scheduleUpdate()
 	self:Touch()
+
 end
 
 function PlayScene:initUI()
@@ -39,7 +45,7 @@ function PlayScene:initUI()
 	bg:setScaleY(1.5)
 	bg:setScaleX(2.6)
 	--
-	self.map = cc.TMXTiledMap:create("level/level1.tmx")
+	self.map = cc.TMXTiledMap:create("level/level"..self.nowNum..".tmx")
 	self.map:setScale(1.6)
 	self:addChild(self.map)
 
@@ -54,7 +60,7 @@ function PlayScene:initUI()
 	self:addChild(edgeNode)
 	-- dump(self.map)
 	--
-	self.hero = Hero.new()
+	self.hero = Hero.new(self.nowNum)
 	self:addChild(self.hero)
 	self.pos1 = cc.p(self.hero:getPosition())
 
@@ -78,8 +84,8 @@ function PlayScene:initUI()
 
 
 	--Monster
-	if self.map:getObjectGroup("Monster") ~= nil then
-		self.MonsterP = self.map:getObjectGroup("Monster"):getObjects()
+	if self.map:getObjectGroup("monsters") ~= nil then
+		self.MonsterP = self.map:getObjectGroup("monsters"):getObjects()
 		--dump(MonsterP)
 		for i=1,#self.MonsterP do
 			local Monster = Monsters.new(tonumber(self.MonsterP[i].Type))
@@ -275,6 +281,101 @@ function PlayScene:Touch()
 			end
 		end
 	end)
+end
+
+--通过当前关卡
+function PlayScene:CrossLevel()
+
+	--pause game
+	--cc.Director:getInstance():pause()
+	--Pause Layer
+	local crossLayer = display.newColorLayer(cc.c4b(0,0,0,220))
+	self:addChild(crossLayer,3)
+	--BGButton
+	local boardPause = display.newSprite("game/boardwin-sheet0.png")
+		:setPosition(cc.p(display.cx,display.cy*1.3))
+		:addTo(crossLayer)
+
+	local m1,m2,m3
+
+	m1= display.newSprite("game/badgebaba-sheet2.png")
+	m1:setPosition(cc.p(60,155))
+	m1:addTo(boardPause,2)
+
+	 if isGold then
+	 	m2 = display.newSprite("game/badgebaba-sheet2.png")
+	 else
+	 	m2 = display.newSprite("game/badgebaba-sheet1.png")
+	 end
+	m2:setPosition(cc.p(60,105))
+	m2:addTo(boardPause,2)
+
+	 if isHelp then
+	 	m3 = display.newSprite("game/badgebaba-sheet2.png")
+	 else
+	 	m3 = display.newSprite("game/badgebaba-sheet1.png")
+	 end
+	m3:setPosition(cc.p(60,55))
+	m3:addTo(boardPause,2)
+
+	local medalImage
+	if self.nowMedal == 1 then
+		medalImage = display.newSprite("game/medal-sheet1.png")
+	elseif self.nowMedal == 2 then
+		medalImage = display.newSprite("game/medal-sheet0.png")
+	elseif self.nowMedal == 3 then
+		medalImage = display.newSprite("game/medal-sheet2.png")
+	end
+	medalImage:setPosition(cc.p(210,110))
+	medalImage:addTo(boardPause,2)
+	
+	--Map Button
+	local MapImage = {
+		normal = "game/buttonmap.png",
+	}
+	local MapButton = cc.ui.UIPushButton.new(MapImage)
+		:setPosition(cc.p(display.cx-100,display.cy*0.6))
+		:addTo(crossLayer) 
+		:onButtonClicked(function ()
+			cc.Director:getInstance():resume()
+			local scene = import("app.scenes.LevelScene").new()
+			display.replaceScene(scene,"fade",0.5)
+		end)
+	--replay Button
+	local ReplayImage = {
+		normal = "game/buttonredo.png"
+	}
+	local ReplayButton = cc.ui.UIPushButton.new(ReplayImage)
+		:setPosition(cc.p(display.cx,display.cy*0.6))
+		:addTo(crossLayer) 
+		:onButtonClicked(function ()
+			cc.Director:getInstance():resume()
+			local scene = import("app.scenes.PlayScene").new(self.nowNum)
+			display.replaceScene(scene,"fade",0.5)
+		end)
+
+		--next Button
+	local NextImage = {
+		normal = "game/buttonnext.png"
+	}
+	local ContinueButton = cc.ui.UIPushButton.new(NextImage)
+		:setPosition(cc.p(display.cx+100,display.cy*0.6))
+		:addTo(crossLayer) 
+		:onButtonClicked(function ()
+			local scene = import("app.scenes.PlayScene").new(self.nowNum+1)
+			display.replaceScene(scene,"fade",0.5)
+		end)	
+
+
+
+	self.levelinfo = {}
+	self.levelinfo = GameData
+	dump(self.levelinfo)
+	self.levelinfo[tostring(self.nowNum)].medal = self.nowMedal   --得到的金牌数
+	self.levelinfo[tostring(self.nowNum)].levelCrossNum = self.levelinfo[tostring(self.nowNum)].levelCrossNum   --通过的关卡数+1
+	GameState.save(self.levelinfo)
+
+
 end
 
 return PlayScene

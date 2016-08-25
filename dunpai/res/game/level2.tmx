@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="20" tilewidth="20" tileheight="20" nextobjectid="44">
+ <tileset firstgid="1" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
+  <image source="tiledmap.png" width="256" height="512"/>
+ </tileset>
+ <layer name="layer3" width="45" height="20">
+  <data encoding="base64" compression="zlib">
+   eJzt0EEKACAIBVEP2qr7H6J1IF8hoYx528gmzXbDNO9c3YnmVahungctWdEbv+xZ/fOFZq+v4547Nt/WsRkAAKDaAuMyCik=
+  </data>
+ </layer>
+ <layer name="layer2" width="45" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztkUsOgjAQhnsZXQqeAJa+daOsXEmiiQfxFi6VuBN07dX8m9AwaQZCC6gx/ZMvzUAfX2aEcHH5XIKG5y/g1oZIzQQEm0jfK0hEt94LMAJjZl0Z3EN9Fabe6t0JmFbsW4NNCZHBe3eQggw8wBk8a5yTPZNzDUUx45CsJn2zSSoK76zmmaqemfbNJjbOTSJntGTQZ3PUoFGuL9Gdc49QNqNI22dKv2XnIfDAPK+32n9Vz8DAEHmvn69dOKvstP+01j18Bm7PN509zYnraZn/Lzmrb1XunPMeHFpwlvfE4ESIGWfOkaupv4vLv+YNIMtAsQ==
+  </data>
+ </layer>
+ <layer name="layer1" width="45" height="20">
+  <data encoding="base64" compression="zlib">
+   eJztlNEKwjAMRQe2vq3ON+e/uN9RHOKjv28DCVxCSjsmbg85cFgLbXK7snWd4ziO4+yDz4K1z0qNe/axLo7zZ+hOZ3Dv3LIxe2RpPG2ayEbeJ+U9KQdWzrFFfvlWMafkGcDE9vzE/BPUIV8gMhsK+v+j57T2zeNDNkDOi+EISk6dPYB4L5ENPzKq3kmJvc8r7BtMRp/SGhyPyivY0rekdXdo6z7JVDqjtta3pvRbWtva9wVugxqU
+  </data>
+ </layer>
+ <objectgroup name="stone">
+  <object id="2" x="102" y="141" width="135" height="17"/>
+  <object id="3" x="140" y="121" width="80" height="19"/>
+  <object id="4" x="361" y="98" width="118" height="20"/>
+  <object id="6" x="399" y="81" width="62" height="16"/>
+  <object id="7" x="421" y="60" width="20" height="20"/>
+  <object id="38" x="861" y="300" width="18" height="19"/>
+ </objectgroup>
+ <objectgroup name="spike">
+  <object id="16" x="420" y="309" width="61" height="12"/>
+ </objectgroup>
+ <objectgroup name="wall">
+  <object id="19" x="0" y="320">
+   <polyline points="0,0 78,-1 98,-19 137,-21 179,-58 260,-59 279,-41 317,-42 361,-1 898,1"/>
+  </object>
+  <object id="20" x="320" y="200">
+   <polyline points="0,0 518,-1"/>
+  </object>
+  <object id="21" x="341" y="120">
+   <polyline points="0,0 156,1"/>
+  </object>
+  <object id="22" x="78" y="160">
+   <polyline points="0,0 179,0"/>
+  </object>
+ </objectgroup>
+ <objectgroup name="birth">
+  <object id="25" x="0" y="300" width="19" height="18"/>
+ </objectgroup>
+ <objectgroup name="Monster">
+  <object id="40" x="540" y="176" width="19" height="22">
+   <properties>
+    <property name="Type" value="1"/>
+    <property name="x1" value="540"/>
+    <property name="x2" value="680"/>
+    <property name="y" value="200"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

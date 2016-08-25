@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="38" height="25" tilewidth="20" tileheight="20">
+ <tileset firstgid="1" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
+  <image source="tiledmap.png" width="256" height="512"/>
+ </tileset>
+ <layer name="块层 2" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMJhADJlyo4A2AD3MR1ocpANxBpRdNpAOGQWjYJgBw4F2AJUAchkxCkbBQAIAU9EDtg==
+  </data>
+ </layer>
+ <layer name="块层 1" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzllE0vQ0EUhiepj5LoXVjQKgkWFtpQia+KjxAJqa8NNmzohkhsUP/AD7C0R+wEW7/Ne3LPxDGZe83ctmnCSZ7ce0/PnHnnPZMqFcaJ+hlHyi3i6lx7+PQ3dSbZ27WHT3/Xs8bt3Qy//vIcW+nXf51jI/4nlsFKTM8kUa9fFbABNhP0cOnv23OHNa2CNfGk3F4Lde2DgwgOI9bcgwcPXRXGR5dvPIIn8AxeHOppHo2egS1ewTt4Ax8O9eY8omZgxhk453c6264FfcYLUAOfzJXjHr4xBoaZbhV91+iMXVw3AkbFc70JunpBEZTBNueOjRr9XeLaCTANZsA4GGqCrkEwafQ+NWr09wJrkrroOVWnBrpDdJduRY72Khq9o3RtqdBX0kU+FcCcCj1PGosgBdpAO1hS4R0u8T4uupSo137J+ftEjTXlQQ/IgIC/U6yPehccdZG/5NG8+vYsKq7BDb/TrPScSE8a5MAA6AP9ICtyedY2y2egqII7QZXz2t8yoz2TcSneaW85I/0kb7RHeaHF9E171wE6Lf1kPv1LrXzPWvbMcF57JP2RvgVijc3PwMhnY2rNu6Jz5p454ze9RuajtOtaW5+43rb95RltM9NrAssa3d+8i/L3KC2yt6z7AjFQTc8=
+  </data>
+ </layer>
+ <layer name="块层 3" width="38" height="25">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2AUjIJRMApGwSjADsqBuAyI9w+0Q0bBKBgFdAM+JKitgNKZQJxFA7eMglFALAAAR40DRA==
+  </data>
+ </layer>
+ <objectgroup name="Objects" width="0" height="0">
+  <object name="Barrier" x="700" y="400" width="20" height="20"/>
+  <object name="PassStagePoint" x="650" y="410"/>
+  <object name="HeroSpawnPoint" x="20" y="410"/>
+  <object name="Barrier" x="62" y="222" width="35" height="38"/>
+  <object name="Barrier" x="99" y="242" width="21" height="17"/>
+  <object name="Barrier" x="381" y="139" width="36" height="62"/>
+  <object name="Barrier" x="418" y="180" width="40" height="20"/>
+  <object name="Barrier" x="360" y="160" width="20" height="40"/>
+  <object name="Barrier" x="340" y="181" width="19" height="20"/>
+  <object name="trap" x="420" y="415" width="60">
+   <polyline points="0,0 58,1"/>
+  </object>
+  <object name="Coin" x="67" y="150">
+   <ellipse/>
+  </object>
+  <object name="Coin" x="89" y="150">
+   <ellipse/>
+  </object>
+  <object name="Coin" x="67" y="173">
+   <ellipse/>
+  </object>
+  <object name="Coin" x="90" y="173">
+   <ellipse/>
+  </object>
+  <object name="Coin" x="432" y="311">
+   <ellipse/>
+  </object>
+  <object name="Coin" x="452" y="311">
+   <ellipse/>
+  </object>
+  <object name="Coin" x="473" y="311">
+   <ellipse/>
+  </object>
+  <object name="ScorePoint" x="440" y="270"/>
+ </objectgroup>
+</map>
