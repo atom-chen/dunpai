@@ -9,12 +9,13 @@ function Hero:ctor()
 	self.state = "normal"
 	self.face = "right"
 	self.action = "stand"
+	self.contact = "wall"
 	self.wall = 1
 	self.standline = 1
 	self.wallArray = {}
 	self.speed = 2.5
 	self.downspeed = 4
-	self.speedY = 15
+	self.speedY = 20
 	self:initself()
 end
 
@@ -62,18 +63,22 @@ end
 
 function Hero:Moveleft()
 	-- local herobody = self:getPhysicsBody()
-	-- herobody:setVelocity(cc.p(-100,0))
-	local heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
-	if self.standline > 1 then
-		if heropos.x > self.wallArray[self.wall].polylinePoints[self.standline-1].x*1.6 and heropos.x < self.wallArray[self.wall].polylinePoints[self.standline].x*1.6 then
-			self.standline = self.standline - 1
+	if self.contact == "wall" then
+		-- herobody:setVelocity(cc.p(-100,0))
+		local heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+		if self.standline > 1 then
+			if heropos.x > self.wallArray[self.wall].polylinePoints[self.standline-1].x*1.6 and heropos.x < self.wallArray[self.wall].polylinePoints[self.standline].x*1.6 then
+				self.standline = self.standline - 1
+			end
 		end
+		local point1 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline].y)*1.6)
+		local point2 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline+1].y)*1.6)
+		local speedX = self.speed * (point2.x - point1.x) / cc.pGetDistance(point1,point2)
+		local speedY = self.speed * (point2.y - point1.y) / cc.pGetDistance(point1,point2)
+		self:setPosition(self:getPositionX()  - speedX,self:getPositionY() - speedY)
+	elseif self.contact == "air" or self.contact == "stone" then
+		self:setPosition(self:getPositionX()  - self.speed,self:getPositionY())
 	end
-	local point1 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline].y)*1.6)
-	local point2 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline+1].y)*1.6)
-	local speedX = self.speed * (point2.x - point1.x) / cc.pGetDistance(point1,point2)
-	local speedY = self.speed * (point2.y - point1.y) / cc.pGetDistance(point1,point2)
-	self:setPosition(self:getPositionX()  - speedX,self:getPositionY() - speedY)
 	if self.face == "right" then
 		self:setFlippedX(true)
 		self.face = "left"
@@ -87,15 +92,19 @@ function Hero:Moveright()
 	-- print("right")
 	-- local herobody = self:getPhysicsBody()
 	-- herobody:setVelocity(cc.p(100,0))
-	local heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
-	if heropos.x > self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6 and heropos.x < self.wallArray[self.wall].polylinePoints[self.standline+2].x*1.6 then
-		self.standline = self.standline + 1
+	if self.contact == "wall" then
+		local heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+		if heropos.x > self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6 and heropos.x < self.wallArray[self.wall].polylinePoints[self.standline+2].x*1.6 then
+			self.standline = self.standline + 1
+		end
+		local point1 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline].y)*1.6)
+		local point2 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline+1].y)*1.6)
+		local speedX = self.speed * (point2.x - point1.x) / cc.pGetDistance(point1,point2)
+		local speedY = self.speed * (point2.y - point1.y) / cc.pGetDistance(point1,point2)
+		self:setPosition(self:getPositionX()  + speedX,self:getPositionY() + speedY)
+	elseif self.contact == "air" or self.contact == "stone" then
+		self:setPosition(self:getPositionX()  + self.speed,self:getPositionY())
 	end
-	local point1 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline].y)*1.6)
-	local point2 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline+1].y)*1.6)
-	local speedX = self.speed * (point2.x - point1.x) / cc.pGetDistance(point1,point2)
-	local speedY = self.speed * (point2.y - point1.y) / cc.pGetDistance(point1,point2)
-	self:setPosition(self:getPositionX()  + speedX,self:getPositionY() + speedY)
 	if self.face == "left" then
 		self:setFlippedX(false)
 		self.face = "right"
