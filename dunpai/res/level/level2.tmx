@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="38" height="25" tilewidth="20" tileheight="20" nextobjectid="13">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="38" height="25" tilewidth="20" tileheight="20" nextobjectid="15">
  <tileset firstgid="1" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
   <image source="../../../../cocospro/dunpai/res/level/tiledmap.png" width="256" height="512"/>
  </tileset>

@@ -1,10 +1,8 @@
-
-display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
-display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
-
 local MainScene = class("MainScene", function()
     return display.newScene("MainScene")
 end)
+
+local Button = import("app.scenes.Button")
 
 function MainScene:ctor()
 	self:initBG()
@@ -90,33 +88,17 @@ function MainScene:initUI()
 	local seq = cc.Sequence:create(gamelogoScale,callfunc)
 	gamelogo:runAction(seq)
 
+	--UIButton
+	local button = Button.new()
 
-	--Music UI
-	local musicImage = {
-		on = "#bmusic-sheet003.png",
-		off = "#bmusic-sheet001.png"
-	}
+	local Musicbutton = button:MusicButton()
+	Musicbutton:setPosition(cc.p(display.right-80,display.top-25))
+	Musicbutton:addTo(self,2)
 
-	local musicCheckButton = cc.ui.UICheckBoxButton.new(musicImage)
-	musicCheckButton:setPosition(cc.p(display.right-80,display.top-25))
-	musicCheckButton:addTo(self,2)
-	musicCheckButton:onButtonClicked(function ()
-		--print(musicCheckButton:isButtonSelected())
-	end)
+	local SoundButton = button:SoundButton()
+	SoundButton:setPosition(cc.p(display.right-30,display.top-25))
+	SoundButton:addTo(self,2)
 
-	--Sound UI
-	local SoundImage = {
-		on = "#bsfx-sheet004.png",
-		off = "#bsfx-sheet001.png"
-	}
-
-	local SoundCheckButton = cc.ui.UICheckBoxButton.new(SoundImage)
-	SoundCheckButton:setPosition(cc.p(display.right-30,display.top-25))
-	SoundCheckButton:addTo(self,2)
-	SoundCheckButton:onButtonClicked(function ()
-		--print(SoundCheckButton:isButtonSelected())
-	end)
-	
 
 end
 

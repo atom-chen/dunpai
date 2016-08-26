@@ -2,6 +2,8 @@ local LevelScene = class("LevelScene", function()
     return display.newScene("LevelScene")
 end)
 
+local Button = import("app.scenes.Button")
+
  local LevelInformation = import("app.scenes.LevelInformation")
  display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
  display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
@@ -9,13 +11,13 @@ end)
  local PlayScene = import("app.scenes.PlayScene")
 
 function LevelScene:ctor()
-	-- self.levelNumber = {{x = 390,y = 140,medal = 0},{x = 240,y = 140,medal = 0},
+	-- self.levelNumber = {{x = 390,y = 140,medal = 3},{x = 240,y = 140,medal = 0},
 	-- 	{x = 140,y = 220,medal = 0},{x = 240,y = 300,medal = 0},{x = 340,y = 360,medal = 0},
 	-- 	{x = 310,y = 445,medal = 0},{x = 440,y = 450,medal = 0},{x = 590,y = 420,medal = 0},
 	-- 	{x = 480,y = 350,medal = 0},{x = 530,y = 230,medal = 0},{x = 630,y = 140,medal = 0},
-	-- 	{x = 715,y = 190,medal = 0},levelCrossNum = 0,maxlevelNum = 12}
+	-- 	{x = 715,y = 190,medal = 0},levelCrossNum = 1,maxlevelNum = 12,isMusic = true,isSound = true}
 	-- GameState.save(self.levelNumber)
-	 --dump(GameData)
+	--  dump(GameData)
 	self.levelinfo = {}
 	self.levelinfo = GameData
 	-- self.levelinfo.levelCrossNum = 5
@@ -26,6 +28,7 @@ function LevelScene:ctor()
 end
 
 function LevelScene:addLevelBG()
+	print(self.levelinfo.levelCrossNum)
 	local levelCrossNum = self.levelinfo.levelCrossNum  --当前已经通过的关卡数
 
 	local levelbgsprite = display.newSprite("game/bglvlselect-sheet0.png")
@@ -88,44 +91,23 @@ function LevelScene:addLevelBG()
  end
 
 function LevelScene:initUI()
-	--Music UI
-	local musicImage = {
-		on = "#bmusic-sheet003.png",
-		off = "#bmusic-sheet001.png"
-	}
 
-	local musicCheckButton = cc.ui.UICheckBoxButton.new(musicImage)
-	musicCheckButton:setPosition(cc.p(display.right-80,display.top-25))
-	musicCheckButton:addTo(self,2)
-	musicCheckButton:onButtonClicked(function ()
-		--print(musicCheckButton:isButtonSelected())
-	end)
+		--UIButton
+	local button = Button.new()
 
-	--Sound UI
-	local SoundImage = {
-		on = "#bsfx-sheet004.png",
-		off = "#bsfx-sheet001.png"
-	}
+	local Musicbutton = button:MusicButton()
+	Musicbutton:setPosition(cc.p(display.right-80,display.top-25))
+	Musicbutton:addTo(self,2)
 
-	local SoundCheckButton = cc.ui.UICheckBoxButton.new(SoundImage)
-	SoundCheckButton:setPosition(cc.p(display.right-30,display.top-25))
-	SoundCheckButton:addTo(self,2)
-	SoundCheckButton:onButtonClicked(function ()
-		--print(SoundCheckButton:isButtonSelected())
-	end)
+	local SoundButton = button:SoundButton()
+	SoundButton:setPosition(cc.p(display.right-30,display.top-25))
+	SoundButton:addTo(self,2)
 
-	--return menu
-	local ReturnImage = {
-		normal = "game/buttonmainmenu-sheet0.png",
-		pressed = "game/buttonmainmenu-sheet1.png"
-	}
-	local ReturnButton = cc.ui.UIPushButton.new(ReturnImage)
-		:setPosition(cc.p(display.left+40,display.top-40))
-		:addTo(self,2)
-		:onButtonClicked(function ()
-			local scene = import("app.scenes.MainScene").new()
-			display.replaceScene(scene,"fade",0.5)
-		end)
+	local ReturnButton = Button:ReturnButton()
+	ReturnButton:setPosition(cc.p(display.left+40,display.top-40))
+	ReturnButton:addTo(self,2)
+
+
 
 end
 

@@ -4,6 +4,7 @@ Map = import("app.scenes.Map")
 Monsters = import("app.scenes.Monsters")
 display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
 display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
+local Button = import("app.scenes.Button")
 
 local PlayScene = class("PlayScene", function(nowNum)
 	local playscene = display.newPhysicsScene("PlayScene")
@@ -23,9 +24,11 @@ function PlayScene:ctor()
 	self.jump = false
 	self.hero = nil
 	self.over = false
+	self.haveGold = 0  --当前地图存在的金币数
+	self.haveBody = 0  --当前地图存在要拯救的小动物的数量
 	self.nowMedal = 1 --当前关卡所得金牌数
-	self.isGold = false   --当前关卡金币是否全部得到
-	self.isHelp = false   --当前关卡的小动物是否救完
+	self.nowGold = 0   --当前关卡金币是否全部得到
+	self.nowBody = 0   --当前关卡的小动物是否救完
 	self.MonsterTable = {}
 
 	self:getPhysicsWorld():setGravity(cc.p(0,0))
@@ -100,10 +103,6 @@ function PlayScene:initUI()
 		end
 	end
 
-
-
-
-
 	self.camera = cc.Camera:createOrthographic(display.width, display.height, 0, 1)
 	self.camera:setCameraFlag(cc.CameraFlag.USER2)
 	self:addChild(self.camera)
@@ -112,39 +111,21 @@ function PlayScene:initUI()
 
 	self:setCameraMask(cc.CameraFlag.USER2, true)
 
-	--Music UI
-	local musicImage = {
-		on = "#bmusic-sheet003.png",
-		off = "#bmusic-sheet001.png"
-	}
+	--Button
+	--Music Button
+	local button = Button.new()
 
-	local musicCheckButton = cc.ui.UICheckBoxButton.new(musicImage)
-	musicCheckButton:setPosition(cc.p(display.right-110,display.top-25))
-	musicCheckButton:addTo(self,2)
-	musicCheckButton:onButtonClicked(function ()
-		--print(musicCheckButton:isButtonSelected())
-		-- musicCheckButton:setCameraMask(cc.CameraFlag.USER2)
-	end)
-	self.musicCheckButton = musicCheckButton
-	--Sound UI
-	local SoundImage = {
-		on = "#bsfx-sheet004.png",
-		off = "#bsfx-sheet001.png"
-	}
+	local Musicbutton = button:MusicButton()
+	Musicbutton:setPosition(cc.p(display.right-110,display.top-25))
+	Musicbutton:addTo(self,2)
 
-	local SoundCheckButton = cc.ui.UICheckBoxButton.new(SoundImage)
-	SoundCheckButton:setPosition(cc.p(display.right-70,display.top-25))
-	SoundCheckButton:addTo(self,2)
-	SoundCheckButton:onButtonClicked(function ()
-		--print(SoundCheckButton:isButtonSelected())
-	end)
+	--Sound Button
+	local SoundButton = button:SoundButton()
+	SoundButton:setPosition(cc.p(display.right-70,display.top-25))
+	SoundButton:addTo(self,2)
+
 	--Pause Button
-	local PauseImage = {
-		normal = "game/bpause-sheet0.png",
-		pressed = "game/bpause-sheet1.png",
-		disabled = "game/bpause-sheet2.png"
-	}
-	local PauseButton = cc.ui.UIPushButton.new(PauseImage)
+	local PauseButton = button:PauseButton()
 		:setPosition(cc.p(display.right-30,display.top-25))
 		:addTo(self,2)
 		:onButtonClicked(function ()
@@ -178,7 +159,7 @@ function PlayScene:initUI()
 				:addTo(boardPause) 
 				:onButtonClicked(function ()
 					cc.Director:getInstance():resume()
-					local scene = import("app.scenes.PlayScene").new()
+					local scene = import("app.scenes.PlayScene").new(self.nowNum)
 					display.replaceScene(scene,"fade",0.5)
 				end)
 
@@ -194,6 +175,74 @@ function PlayScene:initUI()
 					cc.Director:getInstance():resume()
 			end)		
 	end)
+	
+	--操作提示
+	if self.nowNum == 1 then
+		--开场CG
+		local i = 1 --记录当前CG的图片
+		local comic = display.newSprite("game/comic-sheet0_0"..i..".png")
+		-- local comic2 = display.newSprite("game/comic-sheet0_02.png")
+		-- local comic3 = display.newSprite("game/comic-sheet0_03.png")
+		local comicLayer = display.newColorLayer(cc.c4b(0,0,0,240))
+		self:addChild(comicLayer,3)
+
+		comic:setPosition(cc.p(display.cx,display.cy))
+			:addTo(comicLayer)
+
+		local skipimage = {
+			normal = "game/skip-sheet0.png"
+		}
+		local skipButton = cc.ui.UIPushButton.new(skipimage)
+			:setPosition(cc.p(100,-20))
+			:addTo(comic)
+			:onButtonClicked(function ()
+				comicLayer:removeFromParent()
+			end)
+
+		local nextImage = {
+			normal = "game/btnnext-sheet0.png"
+		}
+		local nextButton = cc.ui.UIPushButton.new(nextImage)
+			:setPosition(cc.p(350,-25))
+			:addTo(comic)
+			:onButtonClicked(function ()
+				i = i+1
+				local comic = display.newSprite("game/comic-sheet0_0"..i..".png")
+					:setPosition(cc.p(display.cx,display.cy))
+					:addTo(comicLayer)
+				if i >= 4 then
+					comicLayer:removeFromParent()
+				end
+				if i == 2 then
+					local previmage = {
+						normal = "game/btnprev-sheet0.png"
+					}
+					self.prevButton = cc.ui.UIPushButton.new(previmage)
+						:setPosition(cc.p(280,-25))
+						:addTo(comic)
+						:onButtonClicked(function ()
+							i = i-1
+							local comic = display.newSprite("game/comic-sheet0_0"..i..".png")
+								:setPosition(cc.p(display.cx,display.cy))
+								:addTo(comicLayer)
+							if i == 1 then
+								self.prevButton:removeFromParent()
+							end
+						end)
+				end
+			end)
+
+		local tishiSprite = display.newSprite("game/launch_01.png")
+			:addTo(self,1)
+			:setPosition(cc.p(display.cx,display.top-20))
+			:setAnchorPoint(0.5,1)
+	end
+	if self.nowNum == 2 then
+		local tishiSprite = display.newSprite("game/launch_02.png")
+			:addTo(self,1)
+			:setPosition(cc.p(display.cx,display.top-50))
+			:setAnchorPoint(0.5,1)
+	end
 
 end
 
@@ -388,16 +437,26 @@ function PlayScene:CrossLevel()
 	m1:setPosition(cc.p(60,155))
 	m1:addTo(boardPause,2)
 
-	 if isGold then
-	 	m2 = display.newSprite("game/badgebaba-sheet2.png")
+	 if self.haveGold == self.nowGold then
+	 	self.nowMedal = self.nowMedal + 1
+	 	if self.haveGold == 0 then
+	 		m2 = display.newSprite("game/badgebaba-sheet0.png")
+	 	else
+	 		m2 = display.newSprite("game/badgebaba-sheet2.png")
+	 	end
 	 else
 	 	m2 = display.newSprite("game/badgebaba-sheet1.png")
 	 end
 	m2:setPosition(cc.p(60,105))
 	m2:addTo(boardPause,2)
 
-	 if isHelp then
-	 	m3 = display.newSprite("game/badgebaba-sheet2.png")
+	 if self.haveBody == self.nowBody then
+	 	self.nowMedal = self.nowMedal + 1
+	 	if self.haveBody == 0 then
+	 		m3 = display.newSprite("game/badgebaba-sheet0.png")
+	 	else
+	 		m3 = display.newSprite("game/badgebaba-sheet2.png")
+	 	end
 	 else
 	 	m3 = display.newSprite("game/badgebaba-sheet1.png")
 	 end
@@ -469,6 +528,3 @@ function PlayScene:CrossLevel()
 end
 
 return PlayScene
-
-
--- objPathline.x+objPathline.polylinePoints[1].x,objPathline.y-objPathline.polylinePoints[1].y

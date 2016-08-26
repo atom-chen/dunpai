@@ -1,64 +1,73 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="25" tilewidth="20" tileheight="20" nextobjectid="29">
+<<<<<<< HEAD:dunpai/res/level/level2.tmx
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="38" height="25" tilewidth="20" tileheight="20" nextobjectid="13">
+=======
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="25" tilewidth="20" tileheight="20" nextobjectid="37">
+>>>>>>> a9e91615801bd2db4f868ee7249877d72ca92f7f:dunpai/res/level/level3.tmx
  <tileset firstgid="1" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
-  <image source="tiledmap.png" width="256" height="512"/>
+  <image source="../../../../cocospro/dunpai/res/level/tiledmap.png" width="256" height="512"/>
  </tileset>
- <layer name="layer3" width="45" height="25">
+ <layer name="layer1" width="38" height="25">
   <data encoding="base64" compression="zlib">
-   eJzt0jEKACAMQ9Ee1MlF738CXR2shQxV+Q86lWAomq2K7Xk7NaugczyroHM8q6BzPKuowrvcOe63zt6/OWVvvXMWOgPAP9qcnl0CeNQAZdMS1A==
+   eJztkEkKwkAQReM8oMYIwSkro4ILFVwZhxvo/a/jE7qhKTqhFwZc1IdHVxVN/U9FkUqlUqlUKpVK9d8awMaQwxZ2sIdhjX65x9P1e8ERTnAW9aOGXFV+F/H3DgXc4OrU7xpyPYWHWxfmTwva0IEu9EpmFts3A/wbYpdvb9/M5HwEY5hADFNIYA4LWMIK1ua1fRaQ6+DZLX1mFf5l2eQsdvokIFcakMvnY3P5bpP94F6pZ4f08Pl8Zx/JLxAS
   </data>
  </layer>
- <layer name="layer2" width="45" height="25">
+ <layer name="layer2" width="38" height="25">
   <data encoding="base64" compression="zlib">
-   eJztkssKwjAQRfMtvnZq3ald+FgobUHcqCtXFvT/v8AbzOAQpopWO6Bz4JBOEpKbpM4ZhmEY/8QMzrVDvEAB89AWylmesXH3+6V2AZdwq5bqMTu4r/DQwP70tnkDe9XFv2/mblkz9u3z2/vq0Q32XPV5/VlbsA07bH7cR7U095OkcADXoT5G41Sv4Aj2w/whTEItyeckX8pMnKJxXlNmnmksGGdOlTNLmXzfBE7DetJda2aW/oN3Mp/hpWZmWqOMxnlN9yzJM0t9hvGrXAGggig5
+   eJzt0bEJACEAA0C31QV0fv3i0U5F0OYO0qUIJAQAAOhiSx5S3s5h0/dfWuj8/866N/bAqQqy9QWU
   </data>
  </layer>
- <layer name="layer1" width="45" height="25">
+ <layer name="layer3" width="38" height="25">
   <data encoding="base64" compression="zlib">
-   eJztlEsOgjAURZv4YwI4RPeiS1B34T8OXYebUOLM31S35mtsk2stoRi0kLybnLwCpe+EAkJwOBwOh+OWnW+BgtkTKXH0LeIY6XtQ1MFb+6aiPt4n4mxwJW4+pRxiOl9+1GcB4xExtjBR17eqzg107sBDVVyfU73I/VkqVp5dXDIgmkSLaBMdYiiq6y99QyKCGquK/v/OlJjB8QB8QvHumuUvvfH7XgNmcH/02KxZ92zE69+Dex4YPomiR/RhrCvObYjPdyj48jximxNB367hGOZQZG4ZZD1LJM4hKQF0ccW2js3fRpE+ebj00zwBHMQzvQ==
+   eJzt0rsKACAIRmFft8uej59BQYRBi1PnAxcR/0FFAAAAAF+yKlY5MENnzp5RA/N+tO742r9px/z5F2OfOn0gWgdgkAc1
   </data>
  </layer>
- <objectgroup name="wall">
-  <object id="1" x="1" y="421">
-   <polyline points="0,0 77,-1 97,-20 136,-21 177,-58 256,-61 276,-41 317,-41 359,-1 898,0"/>
-  </object>
-  <object id="3" x="320" y="301">
-   <polyline points="0,0 518,-2"/>
-  </object>
-  <object id="4" x="80" y="279">
-   <polyline points="0,0 158,1"/>
-  </object>
-  <object id="5" x="380" y="219">
-   <polyline points="0,0 159,0"/>
-  </object>
- </objectgroup>
  <objectgroup name="hero">
-  <object id="8" x="0" y="399" width="18" height="21"/>
+  <object id="1" x="56" y="350"/>
  </objectgroup>
- <objectgroup name="stone">
-  <object id="13" x="120" y="239" width="59" height="19"/>
-  <object id="14" x="100" y="261" width="118" height="19"/>
-  <object id="15" x="401" y="200" width="118" height="18"/>
-  <object id="16" x="420" y="180" width="79" height="19"/>
-  <object id="17" x="441" y="161" width="38" height="18"/>
-  <object id="18" x="861" y="401" width="19" height="19"/>
- </objectgroup>
- <objectgroup name="monsters">
-  <object id="20" x="540" y="280" width="18" height="20">
-   <properties>
-    <property name="Type" value="1"/>
-    <property name="x1" value="540"/>
-    <property name="x2" value="660"/>
-   </properties>
+ <objectgroup name="wall">
+  <object id="2" x="-1" y="420">
+   <polyline points="0,0 299,1"/>
+  </object>
+  <object id="3" x="462" y="421">
+   <polyline points="0,0 297,0"/>
+  </object>
+  <object id="5" x="579" y="360">
+   <polyline points="0,0 162,-1"/>
+  </object>
+  <object id="7" x="22" y="360">
+   <polyline points="0,0 156,0"/>
   </object>
  </objectgroup>
- <objectgroup name="spike">
-  <object id="25" x="420" y="407" width="58" height="13"/>
+ <objectgroup name="coin">
+  <object id="11" x="210" y="270">
+   <ellipse/>
+  </object>
+  <object id="12" x="270" y="305">
+   <ellipse/>
+  </object>
+ </objectgroup>
+ <objectgroup name="monster">
+  <object id="8" x="514" y="409"/>
  </objectgroup>
  <objectgroup name="next">
-  <object id="26" x="782" y="398" width="18" height="21"/>
+  <object id="9" x="672" y="347"/>
  </objectgroup>
- <objectgroup name="baby">
-  <object id="28" x="440" y="278" width="17" height="22"/>
+ <objectgroup name="coin">
+  <object id="30" x="120" y="200" width="20" height="20">
+   <ellipse/>
+  </object>
+  <object id="32" x="150" y="200" width="20" height="20">
+   <ellipse/>
+  </object>
+  <object id="33" x="820" y="275" width="20" height="20">
+   <ellipse/>
+  </object>
+  <object id="34" x="420" y="355" width="20" height="20">
+   <ellipse/>
+  </object>
+  <object id="35" x="460" y="355" width="20" height="20">
+   <ellipse/>
+  </object>
  </objectgroup>
 </map>
