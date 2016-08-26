@@ -1,6 +1,7 @@
 
 Hero = import("app.scenes.Hero")
-local Monsters = import("app.scenes.Monsters")
+Map = import("app.scenes.Map")
+Monsters = import("app.scenes.Monsters")
 display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
 display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
 
@@ -21,6 +22,7 @@ function PlayScene:ctor()
 	self.moveright = false
 	self.jump = false
 	self.hero = nil
+	self.over = false
 	self.nowMedal = 1 --当前关卡所得金牌数
 	self.isGold = false   --当前关卡金币是否全部得到
 	self.isHelp = false   --当前关卡的小动物是否救完
@@ -38,16 +40,15 @@ end
 
 function PlayScene:initUI()
 
-
-
-	--banfground pictrue
 	local bg = display.newSprite("game/backgroundforest-sheet0.png")
 		:align(display.CENTER, display.cx, display.cy)
 		:addTo(self)
-	bg:setScaleY(1.5)
+	bg:setScaleY(2)
 	bg:setScaleX(2.6)
+	
 	--
-	self.map = cc.TMXTiledMap:create("level/level"..self.nowNum..".tmx")
+	-- self.map = cc.TMXTiledMap:create("level/level"..self.nowNum..".tmx")
+	self.map = Map.new(self.nowNum)
 	self.map:setScale(1.6)
 	self:addChild(self.map)
 
@@ -63,53 +64,25 @@ function PlayScene:initUI()
 	-- dump(self.map)
 	--
 
-	self.hero = Hero.new(self.nowNum)
+	self.hero = Hero.new(self.map)
 	self.hero:setTag(1)
 	self:addChild(self.hero)
-	self.pos1 = cc.p(self.hero:getPosition())
-
-
-	local wallArray = self.map:getObjectGroup("wall"):getObjects()
-
-	for i = 1,#wallArray do
-		for j = 1,#wallArray[i].polylinePoints-1 do
-			local point1 = cc.p((wallArray[i].x+wallArray[i].polylinePoints[j].x)*1.6,(wallArray[i].y - wallArray[i].polylinePoints[j].y)*1.6)
-			local point2 = cc.p((wallArray[i].x+wallArray[i].polylinePoints[j+1].x) * 1.6,(wallArray[i].y - wallArray[i].polylinePoints[j+1].y)*1.6)
-			local wallbody = cc.PhysicsBody:createEdgeSegment(point1,point2,cc.PhysicsMaterial(1.5,0,10))
-			-- wallbody:setCategoryBitmask(0xFFFFFFFF)
-			wallbody:setContactTestBitmask(0xFFFFFFFF)
-			-- wallbody:setCollisionBitmask(0xFFFFFFFF)
- 			local node = display.newNode()
-				:setCameraMask(cc.CameraFlag.USER2)
-	 			:setPhysicsBody(wallbody)
-	 			:setTag(50+ 20*(i-1) + j)
-	 			:addTo(self)
+	-- self.pos1 = cc.p(self.hero:getPosition())
+	--addstone
+	if #self.map.stonenode ~= 0 then
+		for _,value in pairs(self.map.stonenode) do
+			self:addChild(value)
 		end
 	end
-
-
-	
-	--stone
-	if self.map:getObjectGroup("stone") ~= nil then
-		local stoneArray = self.map:getObjectGroup("stone"):getObjects()
-		-- dump(stoneArray)
-		for _,value in pairs(stoneArray) do
-			local stonebody = cc.PhysicsBody:createEdgeBox(cc.size(value.width*1.45,value.height*1.45), cc.PHYSICSBODY_MATERIAL_DEFAULT)
-			-- local herobody = cc.PhysicsBody:createCircle(hero:getContentSize().width*0.6)
-			-- herobody:getShape(0):setRestitution(0)
-			-- stonebody:setCategoryBitmask(0xFFFFFFFF)
-			stonebody:setContactTestBitmask(0xFFFFFFFF)
-			-- herobody:setCollisionBitmask(0xFFFFFFFF)
-			-- herobody:getShape(0):setFriction(0.5)
-			-- herobody:applyImpulse(cc.p(-150 * math.sqrt(2),150 * math.sqrt(2)))
-			local node = display.newNode()
-				:setPosition(cc.p(value.x*1.6+value.width*0.8+2, value.y*1.6+value.height*0.8+2))
-				:setContentSize(cc.size(value.width*1.45,value.height*1.45))
-	 			:setPhysicsBody(stonebody)
-	 			:setTag(3)
-	 			:addTo(self)
-		end
-	end 
+	--addwall
+	for _,value in pairs(self.map.wallnode) do
+		self:addChild(value)
+	end
+	--addnext
+	for _,value in pairs(self.map.nextnode) do
+		self:addChild(value)
+	end
+ 
 
 	--Monster
 	if self.map:getObjectGroup("monsters") ~= nil then
@@ -138,7 +111,6 @@ function PlayScene:initUI()
 	self:setCameraMask(cc.CameraFlag.USER2)
 
 	self:setCameraMask(cc.CameraFlag.USER2, true)
-	
 
 	--Music UI
 	local musicImage = {
@@ -228,12 +200,17 @@ end
 function PlayScene:Schedule()
 	self:addNodeEventListener(cc.NODE_ENTER_FRAME_EVENT, function (dt)
 		if self.hero:getPositionX()>= display.width/2 and self.hero:getPositionX()<= self.map:getContentSize().width * 1.6 - display.width/2 then
-			self.cameramove = true
-		else 
-			self.cameramove = false
-		end
-		if self.cameramove then
-			self.camera:setPosition(self.hero:getPositionX()-display.width/2 ,0)
+			if self.hero:getPositionY() >= display.height*0.6 then
+				self.camera:setPosition(self.hero:getPositionX()-display.width/2, self.hero:getPositionY() - display.height*0.6)
+			else
+				self.camera:setPosition(self.hero:getPositionX()-display.width/2, 0)
+			end
+		elseif self.hero:getPositionY() >= display.height*0.6 then
+			if self.hero:getPositionX() < display.width/2 then
+				self.camera:setPosition(0, self.hero:getPositionY() - display.height*0.6)
+			elseif self.hero:getPositionX() > self.map:getContentSize().width * 1.6 - display.width/2 then
+				self.camera:setPosition(self.map:getContentSize().width * 1.6 - display.width, self.hero:getPositionY() - display.height*0.6)
+			end
 		end
 
 		if self.moveleft then
@@ -300,12 +277,6 @@ function PlayScene:Touch()
 			end
 
 			if event.x>display.width/4 and event.x<display.width/2  and event.y>0 and event.y<display.height/3 then
-				-- if self.hero.state == "stay_right" then
-				-- 	-- print("1")
-				-- 	self.hero:runaction("stay")
-				-- elseif self.hero.state == "protect_right" then
-				-- 	self.hero:runaction("protect")
-				-- end
 				self.hero:runaction("stand")
 				self.moveright = false
 			end
@@ -355,6 +326,11 @@ function PlayScene:Contact()
 					self.hero:setPosition(self.hero:getPositionX() + self.hero.speed, self.hero:getPositionY())
 				end
 			end
+
+			if tag1 == 1 and tag2 == 4 or tag1 == 4 and tag2 == 1 and not self.over then
+				self.over = true
+				self:CrossLevel()
+			end
 		end
 	end
 
@@ -363,28 +339,20 @@ function PlayScene:Contact()
 		local tag2 = contact:getShapeB():getBody():getNode():getTag()
 
 		if tag1 == 1 and tag2 == 3 or tag1 == 3 and tag2 == 1 then
-			-- print("end")
-			-- print("stone")
-			local stoneX
-			local stoneWidth
-			if tag1 == 3 then
-				stoneX = contact:getShapeA():getBody():getNode():getPositionX()
-				stoneWidth = contact:getShapeA():getBody():getNode():getContentSize().width
-			elseif tag2 == 3 then
-				stoneX = contact:getShapeB():getBody():getNode():getPositionX()
-				stoneWidth = contact:getShapeB():getBody():getNode():getContentSize().width
-			end
-
-			-- print(contact:getShapeA():getBody():getNode():getContentSize().width)
-			if self.hero:getPositionX() - stoneX >= stoneWidth/2  or stoneX - self.hero:getPositionX() >= stoneWidth/2 then
-				self.hero.speedY = 0
-				self.jump = true
-			end
-
-			if self.hero.face == "right" then
-				self.hero:setPosition(self.hero:getPositionX() - 2, self.hero:getPositionY())
-			elseif self.hero.face == "left" then
-				self.hero:setPosition(self.hero:getPositionX() + 2, self.hero:getPositionY())
+			if self.hero.contact == "stone" then
+				local stoneX
+				local stoneWidth
+				if tag1 == 3 then
+					stoneX = contact:getShapeA():getBody():getNode():getPositionX()
+					stoneWidth = contact:getShapeA():getBody():getNode():getContentSize().width
+				elseif tag2 == 3 then
+					stoneX = contact:getShapeB():getBody():getNode():getPositionX()
+					stoneWidth = contact:getShapeB():getBody():getNode():getContentSize().width
+				end
+				if self.hero:getPositionX() - stoneX >= stoneWidth/2  or stoneX - self.hero:getPositionX() >= stoneWidth/2 then
+					self.hero.speedY = 0
+					self.jump = true
+				end
 			end
 		end
 
@@ -407,7 +375,7 @@ function PlayScene:CrossLevel()
 	--pause game
 	--cc.Director:getInstance():pause()
 	--Pause Layer
-	local crossLayer = display.newColorLayer(cc.c4b(0,0,0,220))
+	local crossLayer = display.newColorLayer(cc.c4b(0,0,0,200))
 	self:addChild(crossLayer,3)
 	--BGButton
 	local boardPause = display.newSprite("game/boardwin-sheet0.png")
@@ -490,7 +458,11 @@ function PlayScene:CrossLevel()
 	self.levelinfo = GameData
 	dump(self.levelinfo)
 	self.levelinfo[tostring(self.nowNum)].medal = self.nowMedal   --得到的金牌数
-	self.levelinfo[tostring(self.nowNum)].levelCrossNum = self.levelinfo[tostring(self.nowNum)].levelCrossNum   --通过的关卡数+1
+	--print(self.levelinfo.levelCrossNum)
+	-- self.levelinfo.levelCrossNum = 0
+	if self.nowNum-1 == self.levelinfo.levelCrossNum then
+		self.levelinfo.levelCrossNum = self.levelinfo.levelCrossNum + 1  --通过的关卡数+1
+	end
 	GameState.save(self.levelinfo)
 
 

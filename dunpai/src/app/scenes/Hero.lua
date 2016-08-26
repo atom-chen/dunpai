@@ -1,8 +1,8 @@
 
 display.addSpriteFrames("game/player-sheet.plist","game/player-sheet.pvr.ccz")
-local Hero = class("PlayScene", function(nowNum)
+local Hero = class("PlayScene", function(map)
 	hero = display.newSprite("#player-sheet0_1.png")
-	hero.nowNum = nowNum
+	hero.map = map
     return hero
 end)
 
@@ -21,10 +21,9 @@ function Hero:ctor()
 end
 
 function Hero:initself()
-	local map = cc.TMXTiledMap:create("level/level"..self.nowNum..".tmx")
-	self.wallArray = map:getObjectGroup("wall"):getObjects()
+	self.wallArray = self.map:getObjectGroup("wall"):getObjects()
 
-	local heroArray = map:getObjectGroup("hero"):getObjects()
+	local heroArray = self.map:getObjectGroup("hero"):getObjects()
 	for _,value in pairs(heroArray) do
 		hero:setScale(1.2)
 		local herobody = cc.PhysicsBody:createBox(cc.size(hero:getContentSize().width,hero:getContentSize().height), cc.PHYSICSBODY_MATERIAL_DEFAULT)
