@@ -2,6 +2,8 @@ local LevelScene = class("LevelScene", function()
     return display.newScene("LevelScene")
 end)
 
+local Button = import("app.scenes.Button")
+
  local LevelInformation = import("app.scenes.LevelInformation")
  display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
  display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
@@ -88,44 +90,23 @@ function LevelScene:addLevelBG()
  end
 
 function LevelScene:initUI()
-	--Music UI
-	local musicImage = {
-		on = "#bmusic-sheet003.png",
-		off = "#bmusic-sheet001.png"
-	}
 
-	local musicCheckButton = cc.ui.UICheckBoxButton.new(musicImage)
-	musicCheckButton:setPosition(cc.p(display.right-80,display.top-25))
-	musicCheckButton:addTo(self,2)
-	musicCheckButton:onButtonClicked(function ()
-		--print(musicCheckButton:isButtonSelected())
-	end)
+		--UIButton
+	local button = Button.new()
 
-	--Sound UI
-	local SoundImage = {
-		on = "#bsfx-sheet004.png",
-		off = "#bsfx-sheet001.png"
-	}
+	local Musicbutton = button:MusicButton()
+	Musicbutton:setPosition(cc.p(display.right-80,display.top-25))
+	Musicbutton:addTo(self,2)
 
-	local SoundCheckButton = cc.ui.UICheckBoxButton.new(SoundImage)
-	SoundCheckButton:setPosition(cc.p(display.right-30,display.top-25))
-	SoundCheckButton:addTo(self,2)
-	SoundCheckButton:onButtonClicked(function ()
-		--print(SoundCheckButton:isButtonSelected())
-	end)
+	local SoundButton = button:SoundButton()
+	SoundButton:setPosition(cc.p(display.right-30,display.top-25))
+	SoundButton:addTo(self,2)
 
-	--return menu
-	local ReturnImage = {
-		normal = "game/buttonmainmenu-sheet0.png",
-		pressed = "game/buttonmainmenu-sheet1.png"
-	}
-	local ReturnButton = cc.ui.UIPushButton.new(ReturnImage)
-		:setPosition(cc.p(display.left+40,display.top-40))
-		:addTo(self,2)
-		:onButtonClicked(function ()
-			local scene = import("app.scenes.MainScene").new()
-			display.replaceScene(scene,"fade",0.5)
-		end)
+	local ReturnButton = Button:ReturnButton()
+	ReturnButton:setPosition(cc.p(display.left+40,display.top-40))
+	ReturnButton:addTo(self,2)
+
+
 
 end
 
