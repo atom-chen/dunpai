@@ -4,6 +4,7 @@ Map = import("app.scenes.Map")
 Monsters = import("app.scenes.Monsters")
 display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
 display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
+display.addSpriteFrames("game/baba-sheet.plist", "game/baba-sheet.pvr.ccz")
 local Button = import("app.scenes.Button")
 
 local PlayScene = class("PlayScene", function(nowNum)
@@ -21,6 +22,7 @@ function PlayScene:ctor()
 	self.cameramove = false
 	self.moveleft = false
 	self.moveright = false
+	self.isFire = false
 	self.jump = false
 	self.hero = nil
 	self.over = false
@@ -64,8 +66,8 @@ function PlayScene:initUI()
 	edgeNode:setPosition(size.width / 2, size.height / 2)
 	edgeNode:setPhysicsBody(body)
 	self:addChild(edgeNode)
-	-- dump(self.map)
-	--
+	--dump(self.map)
+	
 
 	self.hero = Hero.new(self.map)
 	self.hero:setTag(1)
@@ -83,6 +85,23 @@ function PlayScene:initUI()
 	end
 	--addnext
 	for _,value in pairs(self.map.nextnode) do
+		self:addChild(value)
+	end
+
+	--addcoin
+	for _,value in pairs(self.map.coinnode) do
+		self.haveGold = self.haveGold +1
+		self:addChild(value)
+	end
+
+	--addspike
+	for _,value in pairs(self.map.spikenode) do
+		self:addChild(value)
+	end
+
+	--cageb
+	for _,value in pairs(self.map.bodynode) do
+		self.haveBody = self.haveBody +1
 		self:addChild(value)
 	end
  
@@ -300,6 +319,18 @@ function PlayScene:Schedule()
 					self.MonsterTable[i].face = "right"
 				end
 			end
+
+			if self.MonsterTable[i].Type == 1 then
+				if self.hero:getPositionY()-self.hero:getContentSize().height <= self.MonsterTable[i].monsterSprite:getPositionY()+self.MonsterTable[i].monsterSprite:getContentSize().height then
+					if self.hero:getPositionY()-self.hero:getContentSize().height >= self.MonsterTable[i].monsterSprite:getPositionY()-self.MonsterTable[i].monsterSprite:getContentSize().height then
+						if self.MonsterTable[i].face ~= self.hero.face then
+							print("fire")
+						end
+					end
+				end
+			end
+
+
 		end
 	end)
 end
@@ -329,14 +360,16 @@ function PlayScene:Touch()
 		end
 
 		if event.name == "ended" then
-			if event.x>0 and event.x<display.width/4 and event.y>0 and event.y<display.height/3 then
-				self.hero:runaction("stand")
-				self.moveleft = false
-			end
+			if self.hero.state ~= "death" then 
+				if event.x>0 and event.x<display.width/4 and event.y>0 and event.y<display.height/3 then
+					self.hero:runaction("stand")
+					self.moveleft = false
+				end
 
-			if event.x>display.width/4 and event.x<display.width/2  and event.y>0 and event.y<display.height/3 then
-				self.hero:runaction("stand")
-				self.moveright = false
+				if event.x>display.width/4 and event.x<display.width/2  and event.y>0 and event.y<display.height/3 then
+					self.hero:runaction("stand")
+					self.moveright = false
+				end
 			end
 		end
 	end)
@@ -437,6 +470,54 @@ function PlayScene:Contact()
 				self:CrossLevel()
 			end
 		end
+		--碰到钉刺死亡
+		if tag1 == 1 and tag2 == 5 or tag1 == 5 and tag2 == 1 then
+			self:setTouchEnabled(false)
+			self.hero.state = "death"
+			self:unscheduleUpdate()
+			self.hero:runaction("death")
+
+			self:performWithDelay(function ()
+				local scene = import("app.scenes.PlayScene").new(self.nowNum)
+				display.replaceScene(scene,"fade",0.4)
+			end, 1)
+		end
+
+		if tag1 == 1 and tag2 == 7 or tag1 == 7 and tag2 == 1 then
+			self.nowBody = self.nowBody + 1
+			local frames = display.newFrames("cageb-sheet%d.png",1,4)
+			local animation = display.newAnimation(frames,0.01)
+			local animate = cc.Animate:create(animation)
+			local bodyNode
+			local body
+			if tag1 == 7 then
+				bodyNode = contact:getShapeA():getBody():getNode()
+			else
+				bodyNode = contact:getShapeB():getBody():getNode()
+			end
+			bodyNode:getPhysicsBody():setContactTestBitmask(0)
+			bodyNode:getPhysicsBody():setCollisionBitmask(0)
+			bodyNode:runAction(animate)
+			--dump(bodyNode)
+			
+			local babaSprite = display.newSprite("#baba-sheet0.png")
+			babaSprite:setCameraMask(cc.CameraFlag.USER2)
+			babaSprite:setPosition(cc.p(bodyNode:getPositionX(),bodyNode:getPositionY()))
+			self:addChild(babaSprite,2)
+			local babaFrames = display.newFrames("baba-sheet%d.png", 0, 2)
+			local babaanimation = display.newAnimation(babaFrames,0.2)
+			local babaP = cc.p(babaSprite:getPositionX(),babaSprite:getPositionY()+30)
+			local babaanimate = cc.Animate:create(babaanimation)
+			local moveup = cc.MoveTo:create(0.5, babaP)
+			local spw = cc.Spawn:create(babaanimate,moveup)
+			local rep = cc.RepeatForever:create(spw)
+			babaSprite:runAction(rep)
+
+
+		end
+
+		
+
 	end
 
 	local function onContactEnd( contact )
@@ -503,6 +584,19 @@ function PlayScene:Contact()
 			end
 		end
 
+		if tag1 == 1 and tag2 == 6 or tag1 == 6 and tag2 == 1 then
+			self.nowGold = self.nowGold +1
+			local coinNode
+			if tag1 == 6 then
+				coinNode = contact:getShapeA():getBody():getNode()
+			else
+				coinNode = contact:getShapeB():getBody():getNode()
+			end
+			coinNode:removeFromParent()
+
+
+		end
+
 	end
 
 	local contactListener = cc.EventListenerPhysicsContact:create()
@@ -520,7 +614,7 @@ end
 function PlayScene:CrossLevel()
 
 	--pause game
-	--cc.Director:getInstance():pause()
+	cc.Director:getInstance():pause()
 	--Pause Layer
 	local crossLayer = display.newColorLayer(cc.c4b(0,0,0,200))
 	self:addChild(crossLayer,3)

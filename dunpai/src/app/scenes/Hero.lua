@@ -90,7 +90,8 @@ function Hero:Moveleft()
 		end
 		-- print(self.standline)
 		if self.standline > 1 then
-			if heropos.x > self.wallArray[self.wall].polylinePoints[self.standline-1].x*1.6 and heropos.x < self.wallArray[self.wall].polylinePoints[self.standline].x*1.6 then
+
+			if heropos.x > self.wallArray[self.wall].x*1.6 + self.wallArray[self.wall].polylinePoints[self.standline-1].x*1.6 and heropos.x < self.wallArray[self.wall].x*1.6 + self.wallArray[self.wall].polylinePoints[self.standline].x*1.6 then
 				self.standline = self.standline - 1
 			end
 		end
@@ -115,6 +116,7 @@ function Hero:Moveright()
 	-- print("right")
 	-- local herobody = self:getPhysicsBody()
 	-- herobody:setVelocity(cc.p(100,0))
+	--dump(self.wallArray[self.wall])
 	if self.contact == "wall" then
 		local heropos
 		if self.wallArray[self.wall].polylinePoints[self.standline+2] ~= nil then
@@ -241,7 +243,14 @@ function Hero:runaction( state )
 		end
 	end
 
+	if state == "death" then
+		local protectframe = display.newSpriteFrame("player-sheet0_24.png")
+		self:stopAllActions()
+		self:setSpriteFrame(protectframe)
+	end
+
 end
+
 
 return Hero
 
