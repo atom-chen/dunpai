@@ -17,6 +17,7 @@ end
 
 function Map:initUI()
 	local wallArray = self:getObjectGroup("wall"):getObjects()
+	-- dump(wallArray[1])
 
 	for i = 1,#wallArray do
 		for j = 1,#wallArray[i].polylinePoints-1 do
@@ -28,6 +29,7 @@ function Map:initUI()
 			-- wallbody:setCollisionBitmask(0xFFFFFFFF)
  			local node = display.newNode()
 				:setCameraMask(cc.CameraFlag.USER2)
+				-- :setPosition(point1)
 	 			:setPhysicsBody(wallbody)
 	 			:setTag(50+ 20*(i-1) + j)
 	 			-- :addTo(self)
@@ -47,7 +49,7 @@ function Map:initUI()
 			stonebody:getShape(0):setRestitution(0)
 			-- stonebody:setCategoryBitmask(0xFFFFFFFF)
 			stonebody:setContactTestBitmask(0xFFFFFFFF)
-			-- stonebody:setCollisionBitmask(0xFFFFFFFF)
+			-- stonebody:setCollisionBitmask(0)
 			-- stonebody:getShape(0):setFriction(0.5)
 			-- stonebody:applyImpulse(cc.p(-150 * math.sqrt(2),150 * math.sqrt(2)))
 			local node = display.newNode()

@@ -263,11 +263,19 @@ function PlayScene:Schedule()
 		end
 
 		if self.moveleft then
-			self.hero:Moveleft()
+			-- if self.hero.action ~= "jump_up" and self.hero.action ~= "jump_down" then
+				self.hero:Moveleft()
+			-- else
+			-- 	self.hero:getPhysicsBody():applyImpulse(cc.p(-100,0))
+			-- end
 		end
 
 		if self.moveright then
-			self.hero:Moveright()
+			-- if self.hero.action ~= "jump_up" and self.hero.action ~= "jump_down" then
+				self.hero:Moveright()
+			-- else
+			-- 	self.hero:getPhysicsBody():applyImpulse(cc.p(100,0))
+			-- end
 		end
 
 		if self.jump then
@@ -314,6 +322,7 @@ function PlayScene:Touch()
 
 			if event.x>display.width*3/4 and event.x<display.width  and event.y>0 and event.y<display.height/3 then
 				self.hero.contact = "air"
+				-- self.hero:getPhysicsBody():setGravityEnable(true)
 				self.jump = true
 			end
 			return true
@@ -339,6 +348,7 @@ function PlayScene:Contact()
 		local tag1 = contact:getShapeA():getBody():getNode():getTag()
 		local tag2 = contact:getShapeB():getBody():getNode():getTag()
 		-- print(tag1,tag2)
+		local hero_bottom = self.hero:getPositionY()-self.hero:getContentSize().height/2
 		if self.hero.action == "jump_down" then
 			if tag1 > 50 and tag2 == 1 or tag1 == 1 and tag2 > 50 then
 				local tag = 0
@@ -347,32 +357,78 @@ function PlayScene:Contact()
 				elseif tag2 > 50 then
 					tag = tag2
 				end
+				local wallY1
+				local wallY2
+				local minwallY
+				local wallArray = self.map:getObjectGroup("wall"):getObjects()
+				local wallnum = math.ceil((tag-50) / 20)
+				local pointnum = tag-50 - (wallnum-1) * 20
+				wallY1 = (wallArray[wallnum].y - wallArray[wallnum].polylinePoints[pointnum].y)*1.6
+				wallY2 = (wallArray[wallnum].y - wallArray[wallnum].polylinePoints[pointnum+1].y)*1.6
+				if wallY1 <= wallY2 then
+					minwallY = wallY1
+				else
+					minwallY = wallY2	
+				end
+				if minwallY - hero_bottom <= 4 then
+					local tag = 0
+					if tag1 > 50 then
+						tag = tag1
+					elseif tag2 > 50 then
+						tag = tag2
+					end
 
-				self.hero.wall = math.ceil((tag-50) / 20)
-				self.hero.standline = tag-50 - (self.hero.wall-1) * 20
-				print(self.hero.wall,self.hero.standline)
+					self.hero.wall = math.ceil((tag-50) / 20)
+					self.hero.standline = tag-50 - (self.hero.wall-1) * 20
+					-- print(self.hero.wall,self.hero.standline)
 
-				self.hero.contact = "wall"
-				self.jump = false
-				self.hero.speedY = 20
-				self.hero:runaction("stand")
+					self.hero.contact = "wall"
+					-- self.hero:getPhysicsBody():setGravityEnable(false)
+					self.jump = false
+					self.hero.speedY = 19
+					self.hero:runaction("stand")
+				end
 			end
 
 			if tag1 == 1 and tag2 == 3 or tag1 == 3 and tag2 == 1 then
-				self.hero.contact = "stone"
-				self.jump = false
-				self.hero.speedY = 20
-				self.hero:runaction("stand")
+				local stoneY
+				if tag1 == 3 then
+					stoneY = contact:getShapeA():getBody():getNode():getPositionY() + contact:getShapeA():getBody():getNode():getContentSize().height/2
+				elseif tag2 == 3 then
+					stoneY = contact:getShapeB():getBody():getNode():getPositionY() + contact:getShapeA():getBody():getNode():getContentSize().height/2
+				end
+				if stoneY -hero_bottom > 3 then
+					print(hero_bottom,stoneY)
+					print("stop")
+					if self.hero.face == "right"  then					
+						self.moveright = false
+					elseif self.hero.face == "left" then
+						self.moveleft = false
+					end
+				else
+					self.hero.contact = "stone"
+					-- self.hero:getPhysicsBody():setGravityEnable(false)
+					self.jump = false
+					self.hero.speedY = 19
+					self.hero:runaction("stand")
+				end
 			end
 		end
 
 		if self.hero.action == "run" then
 			if tag1 == 1 and tag2 == 3 or tag1 == 3 and tag2 == 1 then
-				-- print("stone")
-				if self.hero.face == "right" then
-					self.hero:setPosition(self.hero:getPositionX() - self.hero.speed, self.hero:getPositionY())
-				elseif self.hero.face == "left" then
-					self.hero:setPosition(self.hero:getPositionX() + self.hero.speed, self.hero:getPositionY())
+				local stoneY
+				if tag1 == 3 then
+					stoneY = contact:getShapeA():getBody():getNode():getPositionY() + contact:getShapeA():getBody():getNode():getContentSize().height/2
+				elseif tag2 == 3 then
+					stoneY = contact:getShapeB():getBody():getNode():getPositionY() + contact:getShapeA():getBody():getNode():getContentSize().height/2
+				end
+				if stoneY - hero_bottom > 3 then
+					if self.hero.face == "right" then
+						self.moveright = false
+					elseif self.hero.face == "left" then
+						self.moveleft = false
+					end
 				end
 			end
 
@@ -386,21 +442,63 @@ function PlayScene:Contact()
 	local function onContactEnd( contact )
 		local tag1 = contact:getShapeA():getBody():getNode():getTag()
 		local tag2 = contact:getShapeB():getBody():getNode():getTag()
+		local hero_bottom = self.hero:getPositionY()-self.hero:getContentSize().height/2
 
-		if tag1 == 1 and tag2 == 3 or tag1 == 3 and tag2 == 1 then
-			if self.hero.contact == "stone" then
-				local stoneX
-				local stoneWidth
+		if self.hero.action == "run" then
+			if tag1 == 1 and tag2 == 3 or tag1 == 3 and tag2 == 1 then
+				local stoneY
 				if tag1 == 3 then
-					stoneX = contact:getShapeA():getBody():getNode():getPositionX()
-					stoneWidth = contact:getShapeA():getBody():getNode():getContentSize().width
+					stoneY = contact:getShapeA():getBody():getNode():getPositionY() + contact:getShapeA():getBody():getNode():getContentSize().height/2
 				elseif tag2 == 3 then
-					stoneX = contact:getShapeB():getBody():getNode():getPositionX()
-					stoneWidth = contact:getShapeB():getBody():getNode():getContentSize().width
+					stoneY = contact:getShapeB():getBody():getNode():getPositionY() + contact:getShapeA():getBody():getNode():getContentSize().height/2
 				end
-				if self.hero:getPositionX() - stoneX >= stoneWidth/2  or stoneX - self.hero:getPositionX() >= stoneWidth/2 then
-					self.hero.speedY = 0
-					self.jump = true
+				if hero_bottom>stoneY then
+
+					if self.hero.contact == "stone" then
+						local stoneX
+						local stoneWidth
+						if tag1 == 3 then
+							stoneX = contact:getShapeA():getBody():getNode():getPositionX()
+							stoneWidth = contact:getShapeA():getBody():getNode():getContentSize().width
+						elseif tag2 == 3 then
+							stoneX = contact:getShapeB():getBody():getNode():getPositionX()
+							stoneWidth = contact:getShapeB():getBody():getNode():getContentSize().width
+						end
+						-- print(self.hero:getPositionX(),stoneX,stoneWidth/2)
+						if math.abs(self.hero:getPositionX() - stoneX) >= stoneWidth/2 then
+							self.hero.speedY = 0
+							self.jump = true
+						end
+					end
+				end
+			end
+
+			if tag1 > 50 and tag2 == 1 or tag1 == 1 and tag2 > 50 then
+				local tag = 0
+				if tag1 > 50 then
+					tag = tag1
+				elseif tag2 > 50 then
+					tag = tag2
+				end
+				local wallX
+				local wallArray = self.map:getObjectGroup("wall"):getObjects()				
+				local wallnum = math.ceil((tag-50) / 20)
+				local heropos
+				local maxpoint = #wallArray[wallnum].polylinePoints
+				if self.hero.face == "right" then
+					wallX = (wallArray[wallnum].x+wallArray[wallnum].polylinePoints[maxpoint].x)*1.6
+					heropos = self.hero:getPositionX() - self.hero:getContentSize().width/2	
+					if heropos > wallX then	
+						self.hero.speedY = 0
+						self.jump = true
+					end
+				elseif self.hero.face == "left" then
+					wallX = (wallArray[wallnum].x+wallArray[wallnum].polylinePoints[1].x)*1.6
+					heropos = self.hero:getPositionX() + self.hero:getContentSize().width/2	
+					if heropos < wallX then	
+						self.hero.speedY = 0
+						self.jump = true
+					end
 				end
 			end
 		end

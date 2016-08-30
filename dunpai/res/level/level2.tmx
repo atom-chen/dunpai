@@ -19,10 +19,10 @@
   </data>
  </layer>
  <objectgroup name="hero">
-  <object id="1" x="56" y="350"/>
+  <object id="1" x="53" y="350"/>
  </objectgroup>
  <objectgroup name="wall">
-  <object id="2" x="-1" y="420">
+  <object id="2" x="-2" y="422">
    <polyline points="0,0 299,1"/>
   </object>
   <object id="3" x="462" y="421">
@@ -31,7 +31,7 @@
   <object id="5" x="579" y="360">
    <polyline points="0,0 162,-1"/>
   </object>
-  <object id="7" x="22" y="360">
+  <object id="7" x="21" y="363">
    <polyline points="0,0 156,0"/>
   </object>
  </objectgroup>

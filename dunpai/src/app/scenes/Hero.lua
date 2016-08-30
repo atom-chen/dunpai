@@ -16,7 +16,7 @@ function Hero:ctor()
 	self.wallArray = {}
 	self.speed = 2.5
 	self.downspeed = 4
-	self.speedY = 20
+	self.speedY = 19
 	self:initself()
 end
 
@@ -31,12 +31,14 @@ function Hero:initself()
 		herobody:getShape(0):setRestitution(0)
 		-- herobody:setCategoryBitmask(0xFFFFFFFF)
 		herobody:setContactTestBitmask(0xFFFFFFFF)
-		-- herobody:setCollisionBitmask(0xFFFFFFFF)
+		herobody:setCollisionBitmask(0)
 		herobody:getShape(0):setFriction(0.5)
+		-- herobody:setGravityEnable(false)
 		-- herobody:applyImpulse(cc.p(-150 * math.sqrt(2),150 * math.sqrt(2)))
 		hero:setPhysicsBody(herobody)
 		hero:setPosition(cc.p(value.x*1.6+hero:getContentSize().width/2, value.y*1.6+hero:getContentSize().height/2 -2))
 	end
+
 
 	local stayframe = display.newFrames("player-sheet0_%d.png", 1, 5)
 	local stayanimation = display.newAnimation(stayframe, 0.1)
@@ -65,7 +67,28 @@ function Hero:Moveleft()
 	-- local herobody = self:getPhysicsBody()
 	if self.contact == "wall" then
 		-- herobody:setVelocity(cc.p(-100,0))
-		local heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+		local heropos
+		if self.wallArray[self.wall].polylinePoints[self.standline-1] ~= nil then
+			if math.abs(self.wallArray[self.wall].polylinePoints[self.standline-1].y - self.wallArray[self.wall].polylinePoints[self.standline].y) < 3 then
+				if self.wallArray[self.wall].polylinePoints[self.standline].y < self.wallArray[self.wall].polylinePoints[self.standline+1].y then
+					heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+				else
+					heropos = cc.p(self:getPositionX()+self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+				end
+			else
+				if self.wallArray[self.wall].polylinePoints[self.standline-1].y <= self.wallArray[self.wall].polylinePoints[self.standline].y then
+					-- print("left")
+					heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+				else
+					-- print("right")
+					heropos = cc.p(self:getPositionX()+self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+				end
+			end
+		else
+			-- print("nil")
+			heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+		end
+		-- print(self.standline)
 		if self.standline > 1 then
 			if heropos.x > self.wallArray[self.wall].polylinePoints[self.standline-1].x*1.6 and heropos.x < self.wallArray[self.wall].polylinePoints[self.standline].x*1.6 then
 				self.standline = self.standline - 1
@@ -93,9 +116,21 @@ function Hero:Moveright()
 	-- local herobody = self:getPhysicsBody()
 	-- herobody:setVelocity(cc.p(100,0))
 	if self.contact == "wall" then
-		local heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
-		if heropos.x > self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6 and heropos.x < self.wallArray[self.wall].polylinePoints[self.standline+2].x*1.6 then
-			self.standline = self.standline + 1
+		local heropos
+		if self.wallArray[self.wall].polylinePoints[self.standline+2] ~= nil then
+			-- print("")
+			if self.wallArray[self.wall].polylinePoints[self.standline+1].y <= self.wallArray[self.wall].polylinePoints[self.standline+2].y then	
+				heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+			else
+				heropos = cc.p(self:getPositionX()+self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+			end
+		else
+			heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
+		end
+		if self.wallArray[self.wall].polylinePoints[self.standline+2] ~= nil then
+			if heropos.x > self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6 and heropos.x < self.wallArray[self.wall].polylinePoints[self.standline+2].x*1.6 then
+				self.standline = self.standline + 1
+			end
 		end
 		local point1 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline].y)*1.6)
 		local point2 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline+1].y)*1.6)
