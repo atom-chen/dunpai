@@ -28,7 +28,7 @@ function LevelScene:ctor()
 end
 
 function LevelScene:addLevelBG()
-	print(self.levelinfo.levelCrossNum)
+	--print(self.levelinfo.levelCrossNum)
 	local levelCrossNum = self.levelinfo.levelCrossNum  --当前已经通过的关卡数
 
 	local levelbgsprite = display.newSprite("game/bglvlselect-sheet0.png")
