@@ -120,7 +120,6 @@ function Hero:Moveright()
 	if self.contact == "wall" then
 		local heropos
 		if self.wallArray[self.wall].polylinePoints[self.standline+2] ~= nil then
-			-- print("")
 			if self.wallArray[self.wall].polylinePoints[self.standline+1].y <= self.wallArray[self.wall].polylinePoints[self.standline+2].y then	
 				heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
 			else
@@ -130,7 +129,9 @@ function Hero:Moveright()
 			heropos = cc.p(self:getPositionX()-self:getContentSize().width/2,self:getPositionY()-self:getContentSize().height/2)
 		end
 		if self.wallArray[self.wall].polylinePoints[self.standline+2] ~= nil then
-			if heropos.x > self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6 and heropos.x < self.wallArray[self.wall].polylinePoints[self.standline+2].x*1.6 then
+			local pointx1 = (self.wallArray[self.wall].x +self.wallArray[self.wall].polylinePoints[self.standline+1].x)*1.6
+			local pointx2 = (self.wallArray[self.wall].x +self.wallArray[self.wall].polylinePoints[self.standline+2].x)*1.6
+			if heropos.x > pointx1 and heropos.x < pointx2 then
 				self.standline = self.standline + 1
 			end
 		end
@@ -138,7 +139,7 @@ function Hero:Moveright()
 		local point2 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline+1].y)*1.6)
 		local speedX = self.speed * (point2.x - point1.x) / cc.pGetDistance(point1,point2)
 		local speedY = self.speed * (point2.y - point1.y) / cc.pGetDistance(point1,point2)
-		print(speedY)
+		-- print(self.standline,speedY)
 		self:setPosition(self:getPositionX()  + speedX,self:getPositionY() + speedY)
 	elseif self.contact == "air" or self.contact == "stone" then
 		self:setPosition(self:getPositionX()  + self.speed,self:getPositionY())

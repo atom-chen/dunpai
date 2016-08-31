@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="25" tilewidth="20" tileheight="20" nextobjectid="25">
+ <tileset firstgid="1" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
+  <image source="../../../../cocospro/dunpai/res/level/tiledmap.png" width="256" height="512"/>
+ </tileset>
+ <layer name="layer1" width="45" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztljsvREEUx4/3kixKj1B4ReXV7VJ6NIQGjW3s9kh0fAulRCmhUyjx1fwnOxPHuWbusGfWkvtPfrnzOPfe304md4fob+TktwV+kMK5PSmc25PCmagL9II+0A8GQMnSrfQObecpUAZjYJy1zXVD6R3azttgmJqeO2yszPqt5r/u5xtwm1rkG8lzvgcPlsf0OlHJc34Cd5bn9DpRyXN+Aa/gDVym14lKyHkQzIBZMAfmWX8ovZo3p4E5861dsiyL9rTnnnNwAc4UHWVC67wLKvThWrFUye98Ba6p6bzv4UBDPJBV5hrjbPbTIjgER19wbGsWwFYC3036vC/41edsfuOabdfEXI3VmGdo/ZfzrFPW1a3zXuAe51wXc3VWE3pGK1mhrLMZ862x83HODTHXYDVVJcceyp4jY8dKCrV8XM776s3Zy5zJRsBohyCdZN+deSfAZIcgnWT/HYJvMME=
+  </data>
+ </layer>
+ <layer name="layer2" width="45" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt1jEKACAMQ9HeVjdx0MnDKzirKEJE/oOMpZlKzQBAw7V4dQkA+FxqyeoSAJ4V1QUOFOt/5Oi+hcX8zg862wPcUAGdvgaK
+  </data>
+ </layer>
+ <layer name="layer3" width="45" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt1jEKACAIQFGvmw2NdoHuXUGTNEVUxH8gkoM6SSIA8AZrkW8vAQAfSSObq4cWengXANit37Eie/6Pwb2jm7PST10fYKYC6J4GjA==
+  </data>
+ </layer>
+ <objectgroup name="hero">
+  <object id="1" x="790" y="440"/>
+ </objectgroup>
+ <objectgroup name="next">
+  <object id="9" x="469" y="130"/>
+ </objectgroup>
+ <objectgroup name="wall">
+  <object id="2" x="-1" y="440">
+   <polyline points="0,0 900,1"/>
+  </object>
+  <object id="7" x="81" y="302">
+   <polyline points="0,0 158,0"/>
+  </object>
+  <object id="8" x="342" y="141">
+   <polyline points="0,0 157,-1"/>
+  </object>
+  <object id="19" x="342" y="358">
+   <polyline points="0,0 216,0 236,19"/>
+  </object>
+ </objectgroup>
+ <objectgroup name="stone">
+  <object id="10" x="335" y="319" width="66" height="45"/>
+  <object id="11" x="78" y="279" width="20" height="20"/>
+  <object id="12" x="158" y="421" width="20" height="20"/>
+  <object id="13" x="-2" y="401" width="20" height="40"/>
+ </objectgroup>
+ <objectgroup name="body">
+  <object id="14" x="853" y="352"/>
+ </objectgroup>
+ <objectgroup name="monsters">
+  <object id="15" x="120" y="291">
+   <properties>
+    <property name="type" value="2"/>
+    <property name="x1" value="120"/>
+    <property name="x2" value="220"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
