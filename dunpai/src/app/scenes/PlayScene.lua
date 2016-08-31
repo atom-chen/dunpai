@@ -19,18 +19,21 @@ function PlayScene:ctor()
 	self.hero = nil
 	self.pos1 = nil
 	self.map = nil
+	self.mapheight = nil
+	self.mapwidth = nil
 	self.cameramove = false
 	self.moveleft = false
 	self.moveright = false
-	self.isFire = false
+	self.isFire = true  --发射子弹
 	self.jump = false
-	self.over = false
+	self.over = false  --游戏结束
 	self.haveGold = 0  --当前地图存在的金币数
 	self.haveBody = 0  --当前地图存在要拯救的小动物的数量
 	self.nowMedal = 1 --当前关卡所得金牌数
 	self.nowGold = 0   --当前关卡金币是否全部得到
 	self.nowBody = 0   --当前关卡的小动物是否救完
-	self.MonsterTable = {}
+	self.MonsterTable = {} --存放怪物
+	self.fireballTable = {}  --存放子弹
 
 	self:getPhysicsWorld():setGravity(cc.p(0,0))
 	self:getPhysicsWorld():setDebugDrawMask(cc.PhysicsWorld.DEBUGDRAW_ALL)
@@ -55,6 +58,9 @@ function PlayScene:initUI()
 	self.map = Map.new(self.nowNum)
 	self.map:setScale(1.6)
 	self:addChild(self.map)
+	self.mapheight = self.map:getContentSize().height*1.6
+	self.mapwidth = self.map:getContentSize().width*1.6
+	--print(self.mapwidth)
 
 	local sizeX = self.map:getContentSize().width*1.6
 	local sizeY = self.map:getContentSize().height*1.5
@@ -69,7 +75,6 @@ function PlayScene:initUI()
 	
 
 	self.hero = Hero.new(self.map)
-	print(self.hero)
 	self.hero:setTag(1)
 	self:addChild(self.hero)
 	-- self.pos1 = cc.p(self.hero:getPosition())
@@ -112,13 +117,9 @@ function PlayScene:initUI()
 		--dump(MonsterP)
 		for i=1,#self.MonsterP do
 			local Monster = Monsters.new(tonumber(self.MonsterP[i].Type))
-			--dump(Monster)
-			local MonsterBody = cc.PhysicsBody:createBox(Monster.monsterSprite:getContentSize(),cc.PhysicsMaterial(1.5,0,10))
-			Monster.monsterSprite:setPhysicsBody(MonsterBody)
 			Monster.monsterSprite:setPosition(cc.p(Monster.monsterSprite:getContentSize().width/2+self.MonsterP[i].x*1.6,Monster.monsterSprite:getContentSize().height/2+self.MonsterP[i].y*1.6))
-		 	Monster.monsterSprite:addTo(self,2)
+		 	Monster.monsterSprite:addTo(self)
 		 	table.insert(self.MonsterTable,Monster)
-
 		end
 	end
 
@@ -282,56 +283,83 @@ function PlayScene:Schedule()
 		end
 
 		if self.moveleft then
-			-- if self.hero.action ~= "jump_up" and self.hero.action ~= "jump_down" then
-				self.hero:Moveleft()
-			-- else
-			-- 	self.hero:getPhysicsBody():applyImpulse(cc.p(-100,0))
-			-- end
+			self.hero:Moveleft()
 		end
 
 		if self.moveright then
-			-- if self.hero.action ~= "jump_up" and self.hero.action ~= "jump_down" then
-				self.hero:Moveright()
-			-- else
-			-- 	self.hero:getPhysicsBody():applyImpulse(cc.p(100,0))
-			-- end
+			self.hero:Moveright()
 		end
 
 		if self.jump then
 			self.hero:Jump()
 		end
 
-		--MonsterMove
-		for i = 1,#self.MonsterTable do
-			local MSprite = self.MonsterTable[i].monsterSprite
-			local x1 = self.MonsterP[i].x1*1.6
-			local x2 = self.MonsterP[i].x2*1.6
-			if self.MonsterTable[i].face == "right" then				
-			 	if MSprite:getPositionX()-MSprite:getContentSize().width/2 <= tonumber(x2) then 
-					MSprite:setPosition(cc.p(MSprite:getPositionX()+1,MSprite:getPositionY()))
+		--MonsterMove 
+		if #self.MonsterTable>= 1 then
+			for i = 1,#self.MonsterTable do
+				local MSprite = self.MonsterTable[i].monsterSprite
+				local x1 = self.MonsterP[i].x1*1.6
+				local x2 = self.MonsterP[i].x2*1.6
+				if self.MonsterTable[i].face == "right" then				
+				 	if MSprite:getPositionX()-MSprite:getContentSize().width/2 <= tonumber(x2) then 
+						self.MonsterTable[i]:MoveRight()
+					else
+						MSprite:setFlippedX(true)
+						self.MonsterTable[i].face = "left"
+					end
 				else
-					self.MonsterTable[i].face = "left"
+					if MSprite:getPositionX()-MSprite:getContentSize().width/2 >= tonumber(x1) then
+						self.MonsterTable[i]:MoveLeft()
+					else
+						MSprite:setFlippedX(false)
+						self.MonsterTable[i].face = "right"
+					end
 				end
-			else
-				if MSprite:getPositionX()-MSprite:getContentSize().width/2 >= tonumber(x1) then
-					MSprite:setPosition(cc.p(MSprite:getPositionX()-1,MSprite:getPositionY()))
-				else
-					self.MonsterTable[i].face = "right"
-				end
-			end
 
-			if self.MonsterTable[i].Type == 1 then
-				if self.hero:getPositionY()-self.hero:getContentSize().height <= self.MonsterTable[i].monsterSprite:getPositionY()+self.MonsterTable[i].monsterSprite:getContentSize().height then
-					if self.hero:getPositionY()-self.hero:getContentSize().height >= self.MonsterTable[i].monsterSprite:getPositionY()-self.MonsterTable[i].monsterSprite:getContentSize().height then
-						if self.MonsterTable[i].face ~= self.hero.face then
-							print("fire")
+				if self.MonsterTable[i].Type == 1 then
+					if self.hero:getPositionY()-self.hero:getContentSize().height <= self.MonsterTable[i].monsterSprite:getPositionY()+self.MonsterTable[i].monsterSprite:getContentSize().height then
+						if self.hero:getPositionY()-self.hero:getContentSize().height >= self.MonsterTable[i].monsterSprite:getPositionY()-self.MonsterTable[i].monsterSprite:getContentSize().height then
+							if self.MonsterTable[i].face ~= self.hero.face then
+								if self.isFire then 
+									--self.MonsterTable[i].monsterSprite:setCameraMask(cc.CameraFlag.USER2)
+									self.isFire = false
+									local fireball = self.MonsterTable[i]:addfireball()
+									self:addChild(fireball)
+									fireball:setCameraMask(cc.CameraFlag.USER2)
+									if self.MonsterTable[i].face == "right" then
+										fireball.fireRight = true
+										fireball:setPosition(cc.p(self.MonsterTable[i].monsterSprite:getPositionX()+2+self.MonsterTable[i].monsterSprite:getContentSize().width/2,self.MonsterTable[i].monsterSprite:getPositionY()))
+									else
+										fireball.fireRight = false
+										fireball:setPosition(cc.p(self.MonsterTable[i].monsterSprite:getPositionX()-2-self.MonsterTable[i].monsterSprite:getContentSize().width/2,self.MonsterTable[i].monsterSprite:getPositionY()))
+									end
+									table.insert(self.fireballTable,fireball)
+								end
+								
+							end
 						end
 					end
 				end
 			end
-
-
 		end
+
+		--子弹检测
+		if #self.fireballTable >= 1 then
+			for k,v in pairs(self.fireballTable) do
+				if v:getPositionX() <= 0 or v:getPositionX() >= self.mapwidth then
+					v:removeFromParent()
+					table.remove(self.fireballTable,k)
+					self.isFire = true
+				else
+					if v.fireRight then
+						v:setPosition(cc.p(v:getPositionX()+2,v:getPositionY()))
+					else
+						v:setPosition(cc.p(v:getPositionX()-2,v:getPositionY()))
+					end
+				end
+			end
+		end
+
 	end)
 end
 
@@ -353,7 +381,6 @@ function PlayScene:Touch()
 
 			if event.x>display.width*3/4 and event.x<display.width  and event.y>0 and event.y<display.height/3 then
 				self.hero.contact = "air"
-				-- self.hero:getPhysicsBody():setGravityEnable(true)
 				self.jump = true
 			end
 			return true
@@ -380,11 +407,34 @@ function PlayScene:Contact()
 	local function onContactBegin(contact)
 		local tag1 = contact:getShapeA():getBody():getNode():getTag()
 		local tag2 = contact:getShapeB():getBody():getNode():getTag()
-		print("contactBegin", tag1, tag2)
-		print(self.hero, contact:getShapeA():getBody():getNode() == self.hero, contact:getShapeB():getBody():getNode() == self.hero)
-		-- local hero = (tag1:getTag() == 1) and tag1 or tag2
-		-- local other = (tag1:getTag() ~= 1) and tag1 or tag2
-		-- print(tag1,tag2)
+		local hero,other
+		if tag1 == 1 then
+			hero = contact:getShapeA():getBody():getNode()
+			other = contact:getShapeB():getBody():getNode()
+		else
+			hero = contact:getShapeB():getBody():getNode()
+			other = contact:getShapeA():getBody():getNode()
+		end
+
+		--hero死亡
+		local function heroDeath(herostate)
+			other:getPhysicsBody():setContactTestBitmask(0)	
+			self:setTouchEnabled(false)
+			self:unscheduleUpdate()
+			self.over = true
+			
+			self:unscheduleUpdate()
+			self.hero:runaction(herostate)
+
+			local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
+			eventDispatcher:removeEventListener(self.contactListener)
+			self:performWithDelay(function ()
+				local scene = self.new(self.nowNum)
+				display.replaceScene(scene,"fade",0.4)
+			end, 1)
+		end
+
+
 		local hero_bottom = self.hero:getPositionY()-self.hero:getContentSize().height/2
 		if self.hero.action == "jump_down" then
 			if tag1 > 50 and tag2 == 1 or tag1 == 1 and tag2 > 50 then
@@ -417,7 +467,6 @@ function PlayScene:Contact()
 
 					self.hero.wall = math.ceil((tag-50) / 20)
 					self.hero.standline = tag-50 - (self.hero.wall-1) * 20
-					-- print(self.hero.wall,self.hero.standline)
 
 					self.hero.contact = "wall"
 					-- self.hero:getPhysicsBody():setGravityEnable(false)
@@ -435,8 +484,6 @@ function PlayScene:Contact()
 					stoneY = contact:getShapeB():getBody():getNode():getPositionY() + contact:getShapeA():getBody():getNode():getContentSize().height/2
 				end
 				if stoneY -hero_bottom > 3 then
-					-- print(hero_bottom,stoneY)
-					-- print("stop")
 					if self.hero.face == "right"  then					
 						self.moveright = false
 					elseif self.hero.face == "left" then
@@ -444,7 +491,6 @@ function PlayScene:Contact()
 					end
 				else
 					self.hero.contact = "stone"
-					-- self.hero:getPhysicsBody():setGravityEnable(false)
 					self.jump = false
 					self.hero.speedY = 19
 					self.hero:runaction("stand")
@@ -476,39 +522,13 @@ function PlayScene:Contact()
 		end
 		--碰到钉刺死亡
 		if tag1 == 1 and tag2 == 5 or tag1 == 5 and tag2 == 1 then
-			local spike
-			if tag1 == 5 then
-				spike = contact:getShapeA():getBody():getNode()
-			else
-				spike = contact:getShapeB():getBody():getNode()
-			end
-			spike:getPhysicsBody():setContactTestBitmask(0)
-			print("death")		
-			self:setTouchEnabled(false)
-			self:unscheduleUpdate()
-			self.over = true
-			self.hero.state = "death"
-			self:unscheduleUpdate()
-			self.hero:runaction("death")
-
-			local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
-			eventDispatcher:removeEventListener(self.contactListener)
-			self:performWithDelay(function ()
-				local scene = self.new(self.nowNum)
-				display.replaceScene(scene,"fade",0.4)
-			end, 1)
-			--return false
+			self.hero.state = "death-spike"
+			heroDeath(self.hero.state)
 		end
 
 		if tag1 == 1 and tag2 == 6 or tag1 == 6 and tag2 == 1 then
 			self.nowGold = self.nowGold +1
-			local coinNode
-			if tag1 == 6 then
-				coinNode = contact:getShapeA():getBody():getNode()
-			else
-				coinNode = contact:getShapeB():getBody():getNode()
-			end
-			coinNode:setVisible(false)
+			other:setVisible(false)
 		end
 
 		if tag1 == 1 and tag2 == 7 or tag1 == 7 and tag2 == 1 then
@@ -516,21 +536,13 @@ function PlayScene:Contact()
 			local frames = display.newFrames("cageb-sheet%d.png",1,4)
 			local animation = display.newAnimation(frames,0.01)
 			local animate = cc.Animate:create(animation)
-			local bodyNode
-			local body
-			if tag1 == 7 then
-				bodyNode = contact:getShapeA():getBody():getNode()
-			else
-				bodyNode = contact:getShapeB():getBody():getNode()
-			end
-			bodyNode:getPhysicsBody():setContactTestBitmask(0)
-			bodyNode:getPhysicsBody():setCollisionBitmask(0)
-			bodyNode:runAction(animate)
-			--dump(bodyNode)
+			
+			other:getPhysicsBody():setContactTestBitmask(0)
+			other:runAction(animate)
 			
 			local babaSprite = display.newSprite("#baba-sheet0.png")
 			babaSprite:setCameraMask(cc.CameraFlag.USER2)
-			babaSprite:setPosition(cc.p(bodyNode:getPositionX(),bodyNode:getPositionY()))
+			babaSprite:setPosition(cc.p(other:getPositionX(),other:getPositionY()))
 			self:addChild(babaSprite,2)
 			local babaFrames = display.newFrames("baba-sheet%d.png", 0, 2)
 			local babaanimation = display.newAnimation(babaFrames,0.2)
@@ -540,22 +552,55 @@ function PlayScene:Contact()
 			local spw = cc.Spawn:create(babaanimate,moveup)
 			local rep = cc.RepeatForever:create(spw)
 			babaSprite:runAction(rep)
-
-
 		end
 
-		
-
+		if tag1 == 1 and tag2 == 8 or tag1 == 8 and tag2 == 1 then
+			self.hero.state = "death-monster"
+			heroDeath(self.hero.state)
+		end	
+		if tag1 == 1 and tag2 == 10 or tag1 == 10 and tag2 == 1 then
+			if self.hero.action == "jump_down" and (self.hero:getPositionX()+self.hero:getContentSize().width/2) >= (other:getPositionX()-other:getContentSize().width/2) and (self.hero:getPositionX()-self.hero:getContentSize().width/2) <= (other:getPositionX()+other:getContentSize().width/2) then
+				self.hero.jump = true
+				self.hero.speedY = 22
+				for k,v in pairs(self.MonsterTable) do
+					if v.monsterSprite == other then
+						table.remove(self.MonsterTable,k)
+					end
+				end
+				Monsters:MonsterDeath(other)
+			else
+				self.hero.state = "death-spike"
+				heroDeath(self.hero.state)
+			end
+		end
+		if tag1 == 1 and tag2 == 11 or tag1 == 11 and tag2 == 1 then
+			if self.hero.state == "protect" then
+				other.fireRight = not other.fireRight
+				self.isFire = true
+			else
+				self.hero.state = "death-monster"
+				heroDeath(self.hero.state)
+				other:setVisible(false)
+			end
+		end
 	end
 
-	local function onContactEnd( contact )
+
+	local function onContactEnd(contact)
 		
 		if self.over then
 			return
 		end
 		local tag1 = contact:getShapeA():getBody():getNode():getTag()
 		local tag2 = contact:getShapeB():getBody():getNode():getTag()
-		print("11", self.over,tag1, tag2)
+		local hero,other
+		if tag1 == 1 then
+			hero = contact:getShapeA():getBody():getNode()
+			other = contact:getShapeB():getBody():getNode()
+		else
+			hero = contact:getShapeB():getBody():getNode()
+			other = contact:getShapeA():getBody():getNode()
+		end
 		local hero_bottom = self.hero:getPositionY()-self.hero:getContentSize().height/2
 
 		if self.hero.action == "run" then
@@ -578,7 +623,6 @@ function PlayScene:Contact()
 							stoneX = contact:getShapeB():getBody():getNode():getPositionX()
 							stoneWidth = contact:getShapeB():getBody():getNode():getContentSize().width
 						end
-						-- print(self.hero:getPositionX(),stoneX,stoneWidth/2)
 						if math.abs(self.hero:getPositionX() - stoneX) >= stoneWidth/2 then
 							self.hero.speedY = 0
 							self.jump = true
@@ -618,16 +662,7 @@ function PlayScene:Contact()
 		end
 
 		if tag1 == 1 and tag2 == 6 or tag1 == 6 and tag2 == 1 then
-			self.nowGold = self.nowGold +1
-			local coinNode
-			if tag1 == 6 then
-				coinNode = contact:getShapeA():getBody():getNode()
-			else
-				coinNode = contact:getShapeB():getBody():getNode()
-			end
-			coinNode:removeFromParent()
-
-
+			other:removeFromParent()
 		end
 
 	end
@@ -635,12 +670,9 @@ function PlayScene:Contact()
 	self.contactListener = cc.EventListenerPhysicsContact:create()
 	self.contactListener:registerScriptHandler(onContactBegin,cc.Handler.EVENT_PHYSICS_CONTACT_BEGIN)
 	self.contactListener:registerScriptHandler(onContactEnd,cc.Handler.EVENT_PHYSICS_CONTACT_SEPERATE)
-	-- local contactListener2 = cc.EventListenerPhysicsContact:create()
-	-- contactListener2:registerScriptHandler(onContactEnd,cc.Handler.EVENT_PHYSICS_CONTACT_SEPERATE)
 
 	local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
 	eventDispatcher:addEventListenerWithFixedPriority(self.contactListener, 1)
-	-- eventDispatcher:addEventListenerWithFixedPriority(contactListener2, 1)
 end
 
 --通过当前关卡
@@ -708,6 +740,8 @@ function PlayScene:CrossLevel()
 		:addTo(crossLayer) 
 		:onButtonClicked(function ()
 			cc.Director:getInstance():resume()
+			local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
+			eventDispatcher:removeEventListener(self.contactListener)
 			local scene = import("app.scenes.LevelScene").new()
 			display.replaceScene(scene,"fade",0.5)
 		end)
@@ -720,7 +754,9 @@ function PlayScene:CrossLevel()
 		:addTo(crossLayer) 
 		:onButtonClicked(function ()
 			cc.Director:getInstance():resume()
-			local scene = import("app.scenes.PlayScene").new(self.nowNum)
+			local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
+			eventDispatcher:removeEventListener(self.contactListener)
+			local scene = self.new(self.nowNum)
 			display.replaceScene(scene,"fade",0.5)
 		end)
 
@@ -732,7 +768,8 @@ function PlayScene:CrossLevel()
 		:setPosition(cc.p(display.cx+100,display.cy*0.6))
 		:addTo(crossLayer) 
 		:onButtonClicked(function ()
-			local scene = import("app.scenes.PlayScene").new(self.nowNum+1)
+			cc.Director:getInstance():resume()
+			local scene = self.new(self.nowNum+1)
 			display.replaceScene(scene,"fade",0.5)
 		end)	
 
@@ -740,10 +777,9 @@ function PlayScene:CrossLevel()
 
 	self.levelinfo = {}
 	self.levelinfo = GameData
-	dump(self.levelinfo)
-	self.levelinfo[tostring(self.nowNum)].medal = self.nowMedal   --得到的金牌数
-	--print(self.levelinfo.levelCrossNum)
-	-- self.levelinfo.levelCrossNum = 0
+	if self.self.levelinfo[tostring(self.nowNum)].medal < self.nowMedal then 
+		self.levelinfo[tostring(self.nowNum)].medal = self.nowMedal   --得到的金牌数
+	end
 	if self.nowNum-1 == self.levelinfo.levelCrossNum then
 		self.levelinfo.levelCrossNum = self.levelinfo.levelCrossNum + 1  --通过的关卡数+1
 	end
@@ -752,4 +788,10 @@ function PlayScene:CrossLevel()
 
 end
 
+function PlayScene:onEnter()
+	-- body
+end
+function PlayScene:onExit()
+	-- body
+end
 return PlayScene
