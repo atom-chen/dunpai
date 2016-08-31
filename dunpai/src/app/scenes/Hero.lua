@@ -138,6 +138,7 @@ function Hero:Moveright()
 		local point2 = cc.p(self.wallArray[self.wall].polylinePoints[self.standline+1].x*1.6,(self.wallArray[self.wall].y-self.wallArray[self.wall].polylinePoints[self.standline+1].y)*1.6)
 		local speedX = self.speed * (point2.x - point1.x) / cc.pGetDistance(point1,point2)
 		local speedY = self.speed * (point2.y - point1.y) / cc.pGetDistance(point1,point2)
+		print(speedY)
 		self:setPosition(self:getPositionX()  + speedX,self:getPositionY() + speedY)
 	elseif self.contact == "air" or self.contact == "stone" then
 		self:setPosition(self:getPositionX()  + self.speed,self:getPositionY())
