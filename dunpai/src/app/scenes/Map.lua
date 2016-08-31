@@ -5,7 +5,7 @@ display.addSpriteFrames("game/cageb-sheet.plist", "game/cageb-sheet.pvr.ccz")
 display.addSpriteFrames("game/baba-sheet.plist", "game/baba-sheet.pvr.ccz")
 -- display.addSpriteFrames("game/player-sheet.plist","game/player-sheet.pvr.ccz")
 local Map = class("Map", function(nowNum)
-	map = cc.TMXTiledMap:create("level/level3.tmx")
+	map = cc.TMXTiledMap:create("level/level"..nowNum..".tmx")
     return map
 end)
 function Map:ctor()
