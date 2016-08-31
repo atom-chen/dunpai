@@ -61,6 +61,10 @@ function Hero:initself()
 	local protect_jumpdownanimation = display.newAnimation(protect_jumpdownframe, 0.1)
 	display.setAnimationCache("protect_jumpdown", protect_jumpdownanimation)
 
+	local deathFrame = display.newFrames("player-sheet0_%d.png", 25, 5)
+	local daethAnimation = display.newAnimation(deathFrame, 0.1)
+	display.setAnimationCache("death-Monster", daethAnimation)
+
 end
 
 function Hero:Moveleft()
@@ -245,10 +249,18 @@ function Hero:runaction( state )
 		end
 	end
 
-	if state == "death" then
+	if state == "death-spike" then
 		local protectframe = display.newSpriteFrame("player-sheet0_24.png")
 		self:stopAllActions()
 		self:setSpriteFrame(protectframe)
+	end
+
+	if state == "death-monster" then
+		local death = display.getAnimationCache("death-Monster")
+		self:stopAllActions()
+		self:playAnimationOnce(death,false,function()
+				-- body
+		end, 0)
 	end
 
 end
