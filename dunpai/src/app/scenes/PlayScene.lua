@@ -1,7 +1,7 @@
 
-Hero = import("app.scenes.Hero")
-Map = import("app.scenes.Map")
-Monsters = import("app.scenes.Monsters")
+local Hero = import("app.scenes.Hero")
+local Map = import("app.scenes.Map")
+local Monsters = import("app.scenes.Monsters")
 display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
 display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
 display.addSpriteFrames("game/baba-sheet.plist", "game/baba-sheet.pvr.ccz")
@@ -24,7 +24,6 @@ function PlayScene:ctor()
 	self.moveright = false
 	self.isFire = false
 	self.jump = false
-	self.hero = nil
 	self.over = false
 	self.haveGold = 0  --当前地图存在的金币数
 	self.haveBody = 0  --当前地图存在要拯救的小动物的数量
@@ -70,6 +69,7 @@ function PlayScene:initUI()
 	
 
 	self.hero = Hero.new(self.map)
+	print(self.hero)
 	self.hero:setTag(1)
 	self:addChild(self.hero)
 	-- self.pos1 = cc.p(self.hero:getPosition())
@@ -380,6 +380,10 @@ function PlayScene:Contact()
 	local function onContactBegin(contact)
 		local tag1 = contact:getShapeA():getBody():getNode():getTag()
 		local tag2 = contact:getShapeB():getBody():getNode():getTag()
+		print("contactBegin", tag1, tag2)
+		print(self.hero, contact:getShapeA():getBody():getNode() == self.hero, contact:getShapeB():getBody():getNode() == self.hero)
+		-- local hero = (tag1:getTag() == 1) and tag1 or tag2
+		-- local other = (tag1:getTag() ~= 1) and tag1 or tag2
 		-- print(tag1,tag2)
 		local hero_bottom = self.hero:getPositionY()-self.hero:getContentSize().height/2
 		if self.hero.action == "jump_down" then
@@ -431,8 +435,8 @@ function PlayScene:Contact()
 					stoneY = contact:getShapeB():getBody():getNode():getPositionY() + contact:getShapeA():getBody():getNode():getContentSize().height/2
 				end
 				if stoneY -hero_bottom > 3 then
-					print(hero_bottom,stoneY)
-					print("stop")
+					-- print(hero_bottom,stoneY)
+					-- print("stop")
 					if self.hero.face == "right"  then					
 						self.moveright = false
 					elseif self.hero.face == "left" then
@@ -472,15 +476,39 @@ function PlayScene:Contact()
 		end
 		--碰到钉刺死亡
 		if tag1 == 1 and tag2 == 5 or tag1 == 5 and tag2 == 1 then
+			local spike
+			if tag1 == 5 then
+				spike = contact:getShapeA():getBody():getNode()
+			else
+				spike = contact:getShapeB():getBody():getNode()
+			end
+			spike:getPhysicsBody():setContactTestBitmask(0)
+			print("death")		
 			self:setTouchEnabled(false)
+			self:unscheduleUpdate()
+			self.over = true
 			self.hero.state = "death"
 			self:unscheduleUpdate()
 			self.hero:runaction("death")
 
+			local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
+			eventDispatcher:removeEventListener(self.contactListener)
 			self:performWithDelay(function ()
-				local scene = import("app.scenes.PlayScene").new(self.nowNum)
+				local scene = self.new(self.nowNum)
 				display.replaceScene(scene,"fade",0.4)
 			end, 1)
+			--return false
+		end
+
+		if tag1 == 1 and tag2 == 6 or tag1 == 6 and tag2 == 1 then
+			self.nowGold = self.nowGold +1
+			local coinNode
+			if tag1 == 6 then
+				coinNode = contact:getShapeA():getBody():getNode()
+			else
+				coinNode = contact:getShapeB():getBody():getNode()
+			end
+			coinNode:setVisible(false)
 		end
 
 		if tag1 == 1 and tag2 == 7 or tag1 == 7 and tag2 == 1 then
@@ -521,8 +549,13 @@ function PlayScene:Contact()
 	end
 
 	local function onContactEnd( contact )
+		
+		if self.over then
+			return
+		end
 		local tag1 = contact:getShapeA():getBody():getNode():getTag()
 		local tag2 = contact:getShapeB():getBody():getNode():getTag()
+		print("11", self.over,tag1, tag2)
 		local hero_bottom = self.hero:getPositionY()-self.hero:getContentSize().height/2
 
 		if self.hero.action == "run" then
@@ -599,15 +632,15 @@ function PlayScene:Contact()
 
 	end
 
-	local contactListener = cc.EventListenerPhysicsContact:create()
-	contactListener:registerScriptHandler(onContactBegin,cc.Handler.EVENT_PHYSICS_CONTACT_BEGIN)
-
-	local contactListener2 = cc.EventListenerPhysicsContact:create()
-	contactListener2:registerScriptHandler(onContactEnd,cc.Handler.EVENT_PHYSICS_CONTACT_SEPERATE)
+	self.contactListener = cc.EventListenerPhysicsContact:create()
+	self.contactListener:registerScriptHandler(onContactBegin,cc.Handler.EVENT_PHYSICS_CONTACT_BEGIN)
+	self.contactListener:registerScriptHandler(onContactEnd,cc.Handler.EVENT_PHYSICS_CONTACT_SEPERATE)
+	-- local contactListener2 = cc.EventListenerPhysicsContact:create()
+	-- contactListener2:registerScriptHandler(onContactEnd,cc.Handler.EVENT_PHYSICS_CONTACT_SEPERATE)
 
 	local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
-	eventDispatcher:addEventListenerWithFixedPriority(contactListener, 1)
-	eventDispatcher:addEventListenerWithFixedPriority(contactListener2, 1)
+	eventDispatcher:addEventListenerWithFixedPriority(self.contactListener, 1)
+	-- eventDispatcher:addEventListenerWithFixedPriority(contactListener2, 1)
 end
 
 --通过当前关卡
