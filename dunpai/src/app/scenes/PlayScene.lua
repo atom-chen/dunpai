@@ -49,7 +49,7 @@ function PlayScene:ctor()
 	self.fireballTable = {}  --存放子弹
 
 	self:getPhysicsWorld():setGravity(cc.p(0,0))
-	self:getPhysicsWorld():setDebugDrawMask(cc.PhysicsWorld.DEBUGDRAW_ALL)
+	-- self:getPhysicsWorld():setDebugDrawMask(cc.PhysicsWorld.DEBUGDRAW_ALL)
 	self:initUI()
 	self:Schedule()
 	self:scheduleUpdate()
@@ -279,19 +279,25 @@ end
 
 function PlayScene:Schedule()
 	self:addNodeEventListener(cc.NODE_ENTER_FRAME_EVENT, function (dt)
-		if self.hero:getPositionX()>= display.width/2 and self.hero:getPositionX()<= self.map:getContentSize().width * 1.6 - display.width/2 then
-			if self.hero:getPositionY() >= display.height*0.6 then
-				self.camera:setPosition(self.hero:getPositionX()-display.width/2, self.hero:getPositionY() - display.height*0.6)
-			else
-				self.camera:setPosition(self.hero:getPositionX()-display.width/2, 0)
-			end
-		elseif self.hero:getPositionY() >= display.height*0.6 then
-			if self.hero:getPositionX() < display.width/2 then
-				self.camera:setPosition(0, self.hero:getPositionY() - display.height*0.6)
-			elseif self.hero:getPositionX() > self.map:getContentSize().width * 1.6 - display.width/2 then
-				self.camera:setPosition(self.map:getContentSize().width * 1.6 - display.width, self.hero:getPositionY() - display.height*0.6)
-			end
+		local cameraposX
+		local cameraposY
+		if self.hero:getPositionX() < display.width/2 then
+			cameraposX = 0
+		elseif self.hero:getPositionX() > self.map:getContentSize().width * 1.6 - display.width/2 then
+			cameraposX = self.map:getContentSize().width * 1.6 - display.width
+		else
+			cameraposX = self.hero:getPositionX()-display.width/2
 		end
+
+		if self.hero:getPositionY() <  display.height*0.6 then
+			cameraposY = 0
+		elseif self.hero:getPositionY() > self.mapheight - display.height*0.4 then
+			cameraposY =  self.mapheight - display.height
+		else
+			cameraposY = self.hero:getPositionY() - display.height*0.6
+		end
+		self.camera:setPosition(cameraposX, cameraposY)
+
 
 		if self.moveleft then
 			if self.hero:getPositionX() > 0 then
@@ -541,10 +547,10 @@ function PlayScene:Contact()
 				babaSprite:setPosition(cc.p(other:getPositionX(),other:getPositionY()))
 				self:addChild(babaSprite,2)
 				local babaFrames = display.newFrames("baba-sheet%d.png", 0, 2)
-				local babaanimation = display.newAnimation(babaFrames,0.2)
+				local babaanimation = display.newAnimation(babaFrames,0.15)
 				local babaP = cc.p(babaSprite:getPositionX(),babaSprite:getPositionY()+30)
 				local babaanimate = cc.Animate:create(babaanimation)
-				local moveup = cc.MoveTo:create(0.5, babaP)
+				local moveup = cc.MoveTo:create(0.25, babaP)
 				local spw = cc.Spawn:create(babaanimate,moveup)
 				local rep = cc.RepeatForever:create(spw)
 				babaSprite:runAction(rep)
@@ -570,7 +576,6 @@ function PlayScene:Contact()
 				end
 			end
 			if other:getTag() == 11 then
-				print("11")
 				if self.hero.state == "protect" then
 					other.fireRight = not other.fireRight
 					self.isFire = true
@@ -754,7 +759,7 @@ function PlayScene:CrossLevel()
 
 	self.levelinfo = {}
 	self.levelinfo = GameData
-	if self.self.levelinfo[tostring(self.nowNum)].medal < self.nowMedal then 
+	if self.levelinfo[tostring(self.nowNum)].medal < self.nowMedal then 
 		self.levelinfo[tostring(self.nowNum)].medal = self.nowMedal   --得到的金牌数
 	end
 	if self.nowNum-1 == self.levelinfo.levelCrossNum then
