@@ -55,7 +55,7 @@ function PlayScene:ctor()
 	self.fireballTable = {}  --存放子弹
 
 	self:getPhysicsWorld():setGravity(cc.p(0,0))
-	-- self:getPhysicsWorld():setDebugDrawMask(cc.PhysicsWorld.DEBUGDRAW_ALL)
+	self:getPhysicsWorld():setDebugDrawMask(cc.PhysicsWorld.DEBUGDRAW_ALL)
 	self:initUI()
 	self:Schedule()
 	self:scheduleUpdate()
@@ -646,17 +646,43 @@ function PlayScene:Contact()
 		local tag1 = contact:getShapeA():getBody():getNode()
 		local tag2 = contact:getShapeB():getBody():getNode()
 		local hero = (tag1:getTag() == 1) and tag1 or tag2
-		local other = (tag1:getTag() ~= 1) and tag1 or tag2
-		local hero_bottom = self.hero:getPositionY()-self.hero:getContentSize().height/2
+		if hero:getTag() == 1 then
+			local other = (tag1:getTag() ~= 1) and tag1 or tag2
+			local hero_bottom = self.hero:getPositionY()-self.hero:getContentSize().height/2
 
-		if self.hero.action == "run" then
-			if other:getTag() == 3 then
-				local stoneY = other:getPositionY() + other:getContentSize().height/2
-				if math.abs(hero_bottom - stoneY)< 3 then
-					if self.hero.contact == "stone" then
-						local stoneX = other:getPositionX()
-						local stoneWidth = other:getContentSize().width
-						if math.abs(self.hero:getPositionX() - stoneX) >= stoneWidth/2 then
+			if self.hero.action == "run" then
+				if other:getTag() == 3 then
+					local stoneY = other:getPositionY() + other:getContentSize().height/2
+					if math.abs(hero_bottom - stoneY)< 3 then
+						if self.hero.contact == "stone" then
+							local stoneX = other:getPositionX()
+							local stoneWidth = other:getContentSize().width
+							if math.abs(self.hero:getPositionX() - stoneX) >= stoneWidth/2 then
+								self.hero.speedY = 0
+								self.jump = true
+							end
+						end
+					end
+				end
+
+				if other:getTag() > 50 then
+					local tag = other:getTag()
+					local wallX
+					local wallArray = self.map:getObjectGroup("wall"):getObjects()				
+					local wallnum = math.ceil((tag-50) / 20)
+					local heropos
+					local maxpoint = #wallArray[wallnum].polylinePoints
+					if self.hero.face == "right" and self.hero.standline == maxpoint-1 then
+						wallX = (wallArray[wallnum].x+wallArray[wallnum].polylinePoints[maxpoint].x)*1.6
+						heropos = self.hero:getPositionX() - self.hero:getContentSize().width/2	
+						if heropos > wallX then	
+							self.hero.speedY = 0
+							self.jump = true
+						end
+					elseif self.hero.face == "left" and self.hero.standline == 1 then
+						wallX = (wallArray[wallnum].x+wallArray[wallnum].polylinePoints[1].x)*1.6
+						heropos = self.hero:getPositionX() + self.hero:getContentSize().width/2						
+						if heropos < wallX then
 							self.hero.speedY = 0
 							self.jump = true
 						end
@@ -664,35 +690,10 @@ function PlayScene:Contact()
 				end
 			end
 
-			if other:getTag() > 50 then
-				local tag = other:getTag()
-				local wallX
-				local wallArray = self.map:getObjectGroup("wall"):getObjects()				
-				local wallnum = math.ceil((tag-50) / 20)
-				local heropos
-				local maxpoint = #wallArray[wallnum].polylinePoints
-				if self.hero.face == "right" then
-					wallX = (wallArray[wallnum].x+wallArray[wallnum].polylinePoints[maxpoint].x)*1.6
-					heropos = self.hero:getPositionX() - self.hero:getContentSize().width/2	
-					if heropos > wallX then	
-						self.hero.speedY = 0
-						self.jump = true
-					end
-				elseif self.hero.face == "left" then
-					wallX = (wallArray[wallnum].x+wallArray[wallnum].polylinePoints[1].x)*1.6
-					heropos = self.hero:getPositionX() + self.hero:getContentSize().width/2	
-					if heropos < wallX then	
-						self.hero.speedY = 0
-						self.jump = true
-					end
-				end
+			if other:getTag() == 6 then
+				other:removeFromParent()
 			end
 		end
-
-		if other:getTag() == 6 then
-			other:removeFromParent()
-		end
-
 	end
 
 	self.contactListener = cc.EventListenerPhysicsContact:create()

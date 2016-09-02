@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="25" tilewidth="20" tileheight="20" nextobjectid="25">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="45" height="25" tilewidth="20" tileheight="20" nextobjectid="32">
  <tileset firstgid="1" name="tiledmap" tilewidth="20" tileheight="20" spacing="2" margin="1">
-  <image source="../../../../cocospro/dunpai/res/level/tiledmap.png" width="256" height="512"/>
+  <image source="tiledmap.png" width="256" height="512"/>
  </tileset>
  <layer name="layer1" width="45" height="25">
   <data encoding="base64" compression="zlib">
-   eJztljsvREEUx4/3kixKj1B4ReXV7VJ6NIQGjW3s9kh0fAulRCmhUyjx1fwnOxPHuWbusGfWkvtPfrnzOPfe304md4fob+TktwV+kMK5PSmc25PCmagL9II+0A8GQMnSrfQObecpUAZjYJy1zXVD6R3azttgmJqeO2yszPqt5r/u5xtwm1rkG8lzvgcPlsf0OlHJc34Cd5bn9DpRyXN+Aa/gDVym14lKyHkQzIBZMAfmWX8ovZo3p4E5861dsiyL9rTnnnNwAc4UHWVC67wLKvThWrFUye98Ba6p6bzv4UBDPJBV5hrjbPbTIjgER19wbGsWwFYC3036vC/41edsfuOabdfEXI3VmGdo/ZfzrFPW1a3zXuAe51wXc3VWE3pGK1mhrLMZ862x83HODTHXYDVVJcceyp4jY8dKCrV8XM776s3Zy5zJRsBohyCdZN+deSfAZIcgnWT/HYJvMME=
+   eJztlj1PQjEUho+CIgN+MKFuCOriF7qgjgiLRhdx8S7CriZu+i8Y2UlkM8RR/Wu+5LbhpNreD1tEc9/kyU172tsnzRlK9Ddy/dsCMZI4jyeJ83iSOBNNgTSYYd9ZkAHTls6w7bwP5gULYBEsgTw4sHSGbec6WAYroMHm+Pin+a/93AFd1yIREuTcA8+CvnudUAlyfgEDwat7nVAJcn4D7+ADPLjXCRWTcxYUBWugBMpgHWy6V9PmxlA7Altgm313wC441uy5A/fg1qKjGtM9n1J050fwRL7zuYYLG+KGyLsO67xBft9cguY3XJHfc8P+OnHgW6Po97zHap5S89ia4X8qNmVFTP18ZtgjnVtKrcXWuHKuatDdsfSR9bZSa7M1h2THOUVf3498rNbmNHt083IcZ4/u/ByN3pC5CYa/cws0ekcWJhjpuAo+AXz+MQU=
   </data>
  </layer>
  <layer name="layer2" width="45" height="25">
   <data encoding="base64" compression="zlib">
-   eJzt1jEKACAMQ9HeVjdx0MnDKzirKEJE/oOMpZlKzQBAw7V4dQkA+FxqyeoSAJ4V1QUOFOt/5Oi+hcX8zg862wPcUAGdvgaK
+   eJzt1DEKACEQA8D9raVYeJWP1w9ocQiKzEDqpEoEAACvqiPf6RHAtcrpAT+0kRTzf8sbu1Y9sEMH+p8E7A==
   </data>
  </layer>
  <layer name="layer3" width="45" height="25">
   <data encoding="base64" compression="zlib">
-   eJzt1jEKACAIQFGvmw2NdoHuXUGTNEVUxH8gkoM6SSIA8AZrkW8vAQAfSSObq4cWengXANit37Eie/6Pwb2jm7PST10fYKYC6J4GjA==
+   eJxjYBgFo2AUjIKBAeVYxDKBOIveDhkFo2AU4AVLBtoBo4BskA+l0cvb0bJ2FIyCUTBcAKgsawXiCgrNQddfTqGZo+XsKCAWAAARVwdJ
   </data>
  </layer>
  <objectgroup name="hero">
@@ -45,15 +45,35 @@
   <object id="13" x="-2" y="401" width="20" height="40"/>
  </objectgroup>
  <objectgroup name="body">
-  <object id="14" x="853" y="352"/>
+  <object id="14" x="840" y="363"/>
  </objectgroup>
  <objectgroup name="monsters">
-  <object id="15" x="120" y="291">
+  <object id="15" x="120" y="300">
    <properties>
-    <property name="type" value="2"/>
+    <property name="Type" value="2"/>
     <property name="x1" value="120"/>
     <property name="x2" value="220"/>
    </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="coin">
+  <object id="25" x="406" y="284" width="17" height="16">
+   <ellipse/>
+  </object>
+  <object id="27" x="430.5" y="263" width="17" height="16">
+   <ellipse/>
+  </object>
+  <object id="28" x="446.5" y="280" width="17" height="16">
+   <ellipse/>
+  </object>
+  <object id="29" x="163.5" y="360" width="17" height="16">
+   <ellipse/>
+  </object>
+  <object id="30" x="181.5" y="378" width="17" height="16">
+   <ellipse/>
+  </object>
+  <object id="31" x="149.5" y="379" width="17" height="16">
+   <ellipse/>
   </object>
  </objectgroup>
 </map>

@@ -16,7 +16,6 @@ function Monsters:ctor()
 end
 
 function Monsters:addMonster()
-    print(self.Type)
     local monsterSprite
     if self.Type == 1 then
         
@@ -33,7 +32,6 @@ function Monsters:addMonster()
         monsterSprite:runAction(rep)
 
     elseif self.Type == 2 then
-        print("insert")
         monsterSprite = display.newSprite("#tempa-sheet0_01.png")
         monsterSprite:setTag(9) 
         local MonsterBody = cc.PhysicsBody:createBox(monsterSprite:getContentSize(),cc.PhysicsMaterial(1.5,0,10))
