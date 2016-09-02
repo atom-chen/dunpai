@@ -23,13 +23,19 @@ function Button:MusicButton()
 
 	local musicCheckButton = cc.ui.UICheckBoxButton.new(musicImage)
 	musicCheckButton:setButtonSelected(self.gamedata.isMusic)
+	if self.gamedata.isMusic then
+		audio.resumeMusic()
+	else
+		audio.pauseMusic()
+	end
+
 	musicCheckButton:onButtonClicked(function ()
 		self.gamedata.isMusic = not self.gamedata.isMusic
 		GameState.save(self.gamedata)
 		if self.gamedata.isMusic then
-			print("打开音乐")
+			audio.resumeMusic()
 		else
-			print("关闭音乐")
+			audio.pauseMusic()
 		end
 	end)
 	
@@ -48,13 +54,18 @@ function Button:SoundButton()
 
 	local SoundCheckButton = cc.ui.UICheckBoxButton.new(SoundImage)
 	SoundCheckButton:setButtonSelected(self.gamedata.isSound)
+	if self.gamedata.isSound then
+		audio.resumeAllSounds()
+	else
+		audio.pauseAllSounds()
+	end
 	SoundCheckButton:onButtonClicked(function ()
 		self.gamedata.isSound = not self.gamedata.isSound
 		GameState.save(self.gamedata)
 		if self.gamedata.isSound then
-			print("打开音效")
+			audio.resumeAllSounds()
 		else
-			print("关闭音效")
+			audio.pauseAllSounds()
 		end
 	end)
 

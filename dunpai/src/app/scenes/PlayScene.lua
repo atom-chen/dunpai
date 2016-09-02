@@ -7,6 +7,11 @@ display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
 display.addSpriteFrames("game/baba-sheet.plist", "game/baba-sheet.pvr.ccz")
 local Button = import("app.scenes.Button")
 
+--预加载音乐文件
+audio.preloadSound("game/winmenu-main.ogg")
+audio.preloadSound("game/menu-pause.ogg")
+audio.preloadSound("game/menu-resume.ogg")
+
 local PlayScene = class("PlayScene", function(nowNum)
 	local playscene = display.newPhysicsScene("PlayScene")
 	playscene.nowNum = nowNum
@@ -22,6 +27,7 @@ end)
  -- 6 金币
  -- 7 伙伴
  -- 8,9,10 怪物
+ --11 子弹
  -- 50之后 墙壁
 
 function PlayScene:ctor()
@@ -59,10 +65,17 @@ function PlayScene:ctor()
 end
 
 function PlayScene:initUI()
-
-	local bg = display.newSprite("game/backgroundforest-sheet0.png")
-		:align(display.CENTER, display.cx, display.cy)
-		:addTo(self)
+	local i = math.ceil(self.nowNum/4)
+	local bg
+	if i == 1 then
+		bg = display.newSprite("game/backgroundforest-sheet0.png")
+	elseif i == 2 then
+		bg = display.newSprite("game/backgroundsnow-sheet0.png")
+	elseif i == 3 then
+		bg = display.newSprite("game/backgroundbeach-sheet0.png")
+	end
+	bg:align(display.CENTER, display.cx, display.cy)
+	bg:addTo(self)
 	bg:setScaleY(2)
 	bg:setScaleX(2.6)
 	self.map = Map.new(self.nowNum)
@@ -160,6 +173,7 @@ function PlayScene:initUI()
 		:setPosition(cc.p(display.right-30,display.top-25))
 		:addTo(self,2)
 		:onButtonClicked(function ()
+			audio.preloadSound("game/menu-pause.ogg")
 			--pause game
 			cc.Director:getInstance():pause()
 			--Pause Layer
@@ -178,6 +192,8 @@ function PlayScene:initUI()
 				:addTo(boardPause) 
 				:onButtonClicked(function ()
 					cc.Director:getInstance():resume()
+					local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
+					eventDispatcher:removeEventListener(self.contactListener)
 					local scene = import("app.scenes.LevelScene").new()
 					display.replaceScene(scene,"fade",0.5)
 				end)
@@ -190,6 +206,8 @@ function PlayScene:initUI()
 				:addTo(boardPause) 
 				:onButtonClicked(function ()
 					cc.Director:getInstance():resume()
+					local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
+					eventDispatcher:removeEventListener(self.contactListener)
 					local scene = import("app.scenes.PlayScene").new(self.nowNum)
 					display.replaceScene(scene,"fade",0.5)
 				end)
@@ -204,6 +222,7 @@ function PlayScene:initUI()
 				:onButtonClicked(function ()
 					pauseLayer:removeFromParent()
 					cc.Director:getInstance():resume()
+					audio.preloadSound("game/menu-resume.ogg")
 			end)		
 	end)
 	
@@ -327,6 +346,17 @@ function PlayScene:Schedule()
 			self.hero:Jump()
 		end
 
+		--hero掉落地图
+		if self.hero:getPositionY() <= display.bottom then
+			local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
+			eventDispatcher:removeEventListener(self.contactListener)
+			self:unscheduleUpdate()
+			local scene = self.new(self.nowNum)
+			display.replaceScene(scene,"fade",0.5)
+		end
+
+
+
 		--MonsterMove 
 		if #self.MonsterTable>= 1 then
 			for i = 1,#self.MonsterTable do
@@ -352,7 +382,7 @@ function PlayScene:Schedule()
 				if self.MonsterTable[i].Type == 1 then
 					if self.hero:getPositionY()-self.hero:getContentSize().height <= self.MonsterTable[i].monsterSprite:getPositionY()+self.MonsterTable[i].monsterSprite:getContentSize().height then
 						if self.hero:getPositionY()-self.hero:getContentSize().height >= self.MonsterTable[i].monsterSprite:getPositionY()-self.MonsterTable[i].monsterSprite:getContentSize().height then
-							if self.MonsterTable[i].face ~= self.hero.face then
+							if (self.hero:getPositionX()<=self.MonsterTable[i].monsterSprite:getPositionX() and self.MonsterTable[i].face == "left") or (self.hero:getPositionX()>=self.MonsterTable[i].monsterSprite:getPositionX() and  self.MonsterTable[i].face == "right") then
 								if self.isFire then 
 									self.isFire = false
 									local fireball = self.MonsterTable[i]:addfireball()
@@ -521,6 +551,7 @@ function PlayScene:Contact()
 			if other:getTag() == 4 and not self.over then
 				self.over = true
 				self:CrossLevel()
+				audio.playSound("game/winmenu-main.ogg")
 			end
 
 			--碰到钉刺死亡
@@ -576,7 +607,7 @@ function PlayScene:Contact()
 				end
 			end
 			if other:getTag() == 11 then
-				if self.hero.state == "protect" then
+				if self.hero.state == "protect" and (self.hero.action == "run" or self.hero.action=="stand") and (other.fireRight and self.hero.face == "left" or not other.fireRight and self.hero.face == "right")   then
 					other.fireRight = not other.fireRight
 					self.isFire = true
 				else
@@ -584,10 +615,25 @@ function PlayScene:Contact()
 					heroDeath(self.hero.state)
 					other:setVisible(false)
 				end
+
 			end
-		-- else
-		-- 	tag1
-		-- 	tag2
+			if other:getTag() == 9 then
+				if self.hero.action == "jump_down" and (self.hero:getPositionX()+self.hero:getContentSize().width/2) >= (other:getPositionX()-other:getContentSize().width/2) and (self.hero:getPositionX()-self.hero:getContentSize().width/2) <= (other:getPositionX()+other:getContentSize().width/2) then
+					self.hero.jump = true
+					self.hero.speedY = 25
+				end			
+			end
+		else
+			if tag1:getTag() == 11 and tag2:getTag() == 3 or tag1:getTag() == 3 and tag2:getTag() == 11 then  --子弹和石头碰撞
+				local Fball = (tag1:getTag() == 11) and tag1 or tag2
+				for k,v in pairs(self.fireballTable) do
+					if Fball == v then
+						v:removeFromParent()
+						v = nil
+						table.remove(self.fireballTable, k)
+					end
+				end
+			end
 		end
 	end
 
@@ -738,6 +784,7 @@ function PlayScene:CrossLevel()
 			cc.Director:getInstance():resume()
 			local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
 			eventDispatcher:removeEventListener(self.contactListener)
+			--print("1111")
 			local scene = self.new(self.nowNum)
 			display.replaceScene(scene,"fade",0.5)
 		end)
@@ -759,7 +806,7 @@ function PlayScene:CrossLevel()
 
 	self.levelinfo = {}
 	self.levelinfo = GameData
-	if self.levelinfo[tostring(self.nowNum)].medal < self.nowMedal then 
+	if self.levelinfo[tostring(self.nowNum)].medal <= self.nowMedal then 
 		self.levelinfo[tostring(self.nowNum)].medal = self.nowMedal   --得到的金牌数
 	end
 	if self.nowNum-1 == self.levelinfo.levelCrossNum then

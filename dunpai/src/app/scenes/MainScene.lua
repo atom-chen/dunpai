@@ -2,6 +2,8 @@ local MainScene = class("MainScene", function()
     return display.newScene("MainScene")
 end)
 
+audio.preloadMusic("game/bgm.mp3")
+
 local Button = import("app.scenes.Button")
 
 function MainScene:ctor()
@@ -11,6 +13,7 @@ function MainScene:ctor()
 end
 
 function MainScene:initBG()
+	audio.playMusic("game/bgm.mp3",true)
 	local mainbg = display.newSprite("game/mainbackground-sheet0.png")
 	mainbg:setPosition(cc.p(display.cx,display.cy))
 	mainbg:setScale(display.width/mainbg:getContentSize().width,display.height/mainbg:getContentSize().height)
