@@ -1,13 +1,13 @@
-local LevelInformation = class("LevelScene", function(levelNumber)
+local LevelInformation = class("LevelInformation", function(levelNumber)
 	local levelData = {}
 	levelData = GameData
 	-- dump(levelData)
 	
     local levelinformation = {}
     levelinformation.levelNumber = levelNumber
-    levelinformation.medal = levelData[tostring(levelNumber)].medal
-    levelinformation.PosX = levelData[tostring(levelNumber)].x
-    levelinformation.PosY = levelData[tostring(levelNumber)].y
+    levelinformation.medal = levelData["level"..(levelNumber)].medal
+    levelinformation.PosX = levelData["level"..(levelNumber)].x
+    levelinformation.PosY = levelData["level"..(levelNumber)].y
 
     return levelinformation
 end)

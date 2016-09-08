@@ -32,7 +32,7 @@ function LevelScene:addLevelBG()
 	local levelCrossNum = self.levelinfo.levelCrossNum  --当前已经通过的关卡数
 
 	local levelbgsprite = display.newSprite("game/bglvlselect-sheet0.png")
-		:align(display.BOTTOM_LEFT, -self.levelinfo[tostring(levelCrossNum+1)].x, -self.levelinfo[tostring(levelCrossNum+1)].y)
+		:align(display.BOTTOM_LEFT, -self.levelinfo["level"..(levelCrossNum+1)].x, -self.levelinfo["level"..(levelCrossNum+1)].y)
 	levelbgsprite:setScale(display.width/levelbgsprite:getContentSize().width * 2,display.height/levelbgsprite:getContentSize().height * 1.7)
 
 	cc.ui.UIScrollView.new({
@@ -58,7 +58,7 @@ function LevelScene:addLevelBG()
 					display.replaceScene(scene,"fade",0.2)
 				end)
 			 local sprite1 = display.newSprite("game/stagebutton-sheet0_01.png")
-			 	:setPosition(cc.p(self.levelinfo[tostring(levelCrossNum+2)].x,self.levelinfo[tostring(levelCrossNum+2)].y))
+			 	:setPosition(cc.p(self.levelinfo["level"..(levelCrossNum+2)].x,self.levelinfo["level"..(levelCrossNum+2)].y))
 			 	:addTo(levelbgsprite)
 		end
 	elseif levelCrossNum == 11 then

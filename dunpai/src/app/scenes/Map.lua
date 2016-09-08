@@ -90,6 +90,11 @@ function Map:initUI()
 			coinSprite:setPhysicsBody(coinbody)
 			coinSprite:setPosition(cc.p(value.x*1.6+coinSprite:getContentSize().width/2,value.y*1.6+coinSprite:getContentSize().height/2))
 			coinSprite:setTag(6)
+			coinSprite:setScale(1.5)
+
+			local coinFrame = display.newFrames("coin-sheet%d.png", 0, 4)
+			local coinAnimation = display.newAnimation(coinFrame, 0.1)
+			coinSprite:playAnimationForever(coinAnimation, 0)
 	 		table.insert(self.coinnode, coinSprite)
 		end
 	end

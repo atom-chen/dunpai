@@ -28,7 +28,11 @@ function MyApp:ctor()
     	return returnValue
     end,"data.text","1234")
 
-    GameData = GameState.load()or{}
+    GameData = GameState.load()or{level1 = {x = 390,y = 140,medal = 0},level2 = {x = 240,y = 140,medal = 0},
+        level3 = {x = 140,y = 220,medal = 0},level4 = {x = 240,y = 300,medal = 0},level5 = {x = 340,y = 360,medal = 0},
+        level6 = {x = 310,y = 445,medal = 0},level7 = {x = 440,y = 450,medal = 0},level8 = {x = 590,y = 420,medal = 0},
+        level9 = {x = 480,y = 350,medal = 0},level10 = {x = 530,y = 230,medal = 0},level11 = {x = 630,y = 140,medal = 0},
+        level12 = {x = 715,y = 190,medal = 0},levelCrossNum = 0,maxlevelNum = 12,isMusic = true,isSound = true}
     GameState.save(GameData)
 end
 

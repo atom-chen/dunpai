@@ -5,6 +5,7 @@ local Monsters = import("app.scenes.Monsters")
 display.addSpriteFrames("game/bmusic-sheet0.plist","game/bmusic-sheet0.png")
 display.addSpriteFrames("game/bsfx-sheet0.plist","game/bsfx-sheet0.png")
 display.addSpriteFrames("game/baba-sheet.plist", "game/baba-sheet.pvr.ccz")
+display.addSpriteFrames("game/coin-sheet.plist", "game/coin-sheet.pvr.ccz")
 local Button = import("app.scenes.Button")
 
 --预加载音乐文件
@@ -91,7 +92,7 @@ function PlayScene:initUI()
 
 	self.hero = Hero.new(self.map)
 	self.hero:setTag(1)
-	self:addChild(self.hero)
+	self:addChild(self.hero,2)
 	--addstone
 	if #self.map.stonenode ~= 0 then
 		for _,value in pairs(self.map.stonenode) do
@@ -298,6 +299,8 @@ end
 
 function PlayScene:Schedule()
 	self:addNodeEventListener(cc.NODE_ENTER_FRAME_EVENT, function (dt)
+		-- self:setCameraMask(2)
+
 		local cameraposX
 		local cameraposY
 		if self.hero:getPositionX() < display.width/2 then
@@ -427,7 +430,63 @@ function PlayScene:Schedule()
 end
 
 function PlayScene:Touch()
+	-- local MoveleftBtn = cc.ui.UIPushButton.new({normal = "b1.png"})
+	-- 	:setButtonSize(display.width/4, display.height/3)
+	-- 	:align(display.BOTTOM_LEFT, 0, 0)
+	-- 	:addTo(self)
+	-- 	:onButtonPressed(function ()
+	-- 		if self.stone_contact == "right" then
+	-- 			self.stone_contact = nil
+	-- 		end
+	-- 		self.moveleft = true
+	-- 	end)
+	-- 	:onButtonRelease(function ()
+	-- 		if self.hero.state ~= "death" then
+	-- 			self.moveleft = false
+	-- 			if self.hero.action == "run" then
+	-- 				self.hero:runaction("stand")
+	-- 			end
+	-- 		end
+	-- 	end)
+
+	-- 	local MoverightBtn = cc.ui.UIPushButton.new({normal = "b1.png"})
+	-- 	:setButtonSize(display.width/4, display.height/3)
+	-- 	:align(display.BOTTOM_LEFT, display.width/4, 0)
+	-- 	:addTo(self)
+	-- 	:onButtonPressed(function ()
+	-- 		if self.stone_contact == "left" then
+	-- 			self.stone_contact = nil
+	-- 		end
+	-- 		self.moveright = true
+	-- 	end)
+	-- 	:onButtonRelease(function ()
+	-- 		if self.hero.state ~= "death" then
+	-- 			self.moveright = false
+	-- 			if self.hero.action == "run" then
+	-- 				self.hero:runaction("stand")
+	-- 			end
+	-- 		end
+	-- 	end)
+
+	-- 	local ProtectBtn = cc.ui.UIPushButton.new({normal = "b1.png"})
+	-- 	:setButtonSize(display.width/4, display.height/3)
+	-- 	:align(display.BOTTOM_LEFT, display.width/2, 0)
+	-- 	:addTo(self)
+	-- 	:onButtonClicked(function ()
+	-- 		self.hero:Protect()
+	-- 	end)
+
+	-- 	local JumpBtn = cc.ui.UIPushButton.new({normal = "b1.png"})
+	-- 	:setButtonSize(display.width/4, display.height/3)
+	-- 	:align(display.BOTTOM_LEFT, display.width* 3/4, 0)
+	-- 	:addTo(self)
+	-- 	:onButtonClicked(function ()
+	-- 		self.stone_contact = nil
+	-- 		self.hero.contact = "air"
+	-- 		self.jump = true
+	-- 	end)
 	self:setTouchEnabled(true)
+	-- self:setTouchMode(cc.TOUCH_MODE_ALL_AT_ONCE)
 	self:addNodeEventListener(cc.NODE_TOUCH_EVENT, function(event)
 		if event.name == "began" then
 			if event.x>0 and event.x<display.width/4 and event.y>0 and event.y<display.height/3 then
@@ -478,7 +537,7 @@ function PlayScene:Contact()
 		local hero = (tag1:getTag() == 1) and tag1 or tag2
 		if hero:getTag() == 1 then
 			local other = (tag1:getTag() ~= 1) and tag1 or tag2
-			local hero_bottom = self.hero:getPositionY()-self.hero:getContentSize().height/2
+			local hero_bottom = self.hero:getPositionY()-self.hero:getContentSize().height*0.6
 			--hero死亡
 			local function heroDeath(herostate)
 				other:getPhysicsBody():setContactTestBitmask(0)	
@@ -496,27 +555,43 @@ function PlayScene:Contact()
 					display.replaceScene(scene,"fade",0.4)
 				end, 1)
 			end
+			--墙壁碰撞
 			if other:getTag() > 50 and self.hero.action == "jump_down" then
 				local tag = other:getTag()
 				local wallY1
-				local wallY2
+				local wallY2				
 				local minwallY
 				local wallArray = self.map:getObjectGroup("wall"):getObjects()
 				local wallnum = math.ceil((tag-50) / 20)
 				local pointnum = tag-50 - (wallnum-1) * 20
+				local wallX
+				local hero_left = self.hero:getPositionX() - self.hero:getContentSize().width *0.6
+				wallX = (wallArray[wallnum].x + wallArray[wallnum].polylinePoints[pointnum].x)*1.6
 				wallY1 = (wallArray[wallnum].y - wallArray[wallnum].polylinePoints[pointnum].y)*1.6
 				wallY2 = (wallArray[wallnum].y - wallArray[wallnum].polylinePoints[pointnum+1].y)*1.6
+				-- print("first tag&pointnum:",tag,pointnum)
+				if  pointnum ~= 1 and hero_left < wallX and wallY1 > wallY2 then
+					-- print("insert")
+					tag = tag - 1
+					pointnum = pointnum - 1
+					wallY1 = (wallArray[wallnum].y - wallArray[wallnum].polylinePoints[pointnum].y)*1.6
+					wallY2 = (wallArray[wallnum].y - wallArray[wallnum].polylinePoints[pointnum+1].y)*1.6
+				end
+				
+				-- print("tag&pointnum:",tag,pointnum)
+				-- print("wallX&heroleft",wallX,hero_left)				
 				if wallY1 <= wallY2 then
 					minwallY = wallY1
 				else
 					minwallY = wallY2	
-				end
-				if minwallY - hero_bottom <= 4 then
-					self.hero.wall = math.ceil((tag-50) / 20)
-					self.hero.standline = tag-50 - (self.hero.wall-1) * 20
-					-- print(self.hero.wall,self.hero.standline)
-					self.hero.contact = "wall"
+				end				
+				-- print("mingwallY&hero_bottom:",minwallY,hero_bottom)
+				if minwallY - hero_bottom <= 7 then
 					self.jump = false
+					self.hero.wall = math.ceil((tag-50) / 20)
+					-- self.hero.standline = tag-50 - (self.hero.wall-1) * 20
+					self.hero.standline = pointnum
+					self.hero.contact = "wall"					
 					self.hero.speedY = 19
 					self.hero:runaction("stand")
 				end
@@ -562,7 +637,17 @@ function PlayScene:Contact()
 			--金币碰撞
 			if other:getTag() == 6 then
 				self.nowGold = self.nowGold +1
-				other:setVisible(false)
+				other:stopAllActions()
+				local coinFrame = display.newFrames("coin-sheet%d.png", 4, 4)
+				local coinAnimation = display.newAnimation(coinFrame, 0.12)
+				local coinanimate = cc.Animate:create(coinAnimation)
+				local moveup = cc.MoveBy:create(0.48, cc.p(0,40))
+				local callfunc = cc.CallFunc:create(function ()
+					other:setVisible(false)
+				end)
+				local spa = cc.Spawn:create(moveup, coinanimate)
+				local seq = cc.Sequence:create(spa,callfunc)
+				other:runAction(seq)
 			end
 			-- 伙伴碰撞
 			if other:getTag() == 7 then
@@ -799,6 +884,8 @@ function PlayScene:CrossLevel()
 		:addTo(crossLayer) 
 		:onButtonClicked(function ()
 			cc.Director:getInstance():resume()
+			local eventDispatcher = cc.Director:getInstance():getEventDispatcher()
+			eventDispatcher:removeEventListener(self.contactListener)
 			local scene = self.new(self.nowNum+1)
 			display.replaceScene(scene,"fade",0.5)
 		end)	
@@ -807,8 +894,8 @@ function PlayScene:CrossLevel()
 
 	self.levelinfo = {}
 	self.levelinfo = GameData
-	if self.levelinfo[tostring(self.nowNum)].medal <= self.nowMedal then 
-		self.levelinfo[tostring(self.nowNum)].medal = self.nowMedal   --得到的金牌数
+	if self.levelinfo["level"..(self.nowNum)].medal <= self.nowMedal then 
+		self.levelinfo["level"..(self.nowNum)].medal = self.nowMedal   --得到的金牌数
 	end
 	if self.nowNum-1 == self.levelinfo.levelCrossNum then
 		self.levelinfo.levelCrossNum = self.levelinfo.levelCrossNum + 1  --通过的关卡数+1
